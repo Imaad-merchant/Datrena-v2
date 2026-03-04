@@ -92,11 +92,12 @@ export default function TerminalSettings({ symbol, setSymbol, lookbackDays, setL
       </Button>
 
       <div className="border-t border-gray-800 pt-4 space-y-2">
-        <p className="text-xs text-gray-600 uppercase tracking-widest font-bold">Session Reference</p>
+        <p className="text-xs text-gray-600 uppercase tracking-widest font-bold">Session Reference (UTC)</p>
         <div className="space-y-1 text-xs text-gray-400">
-          <div className="flex justify-between"><span className="text-blue-400">London</span><span>02:00–05:00 UTC</span></div>
-          <div className="flex justify-between"><span className="text-green-400">NY Open</span><span>13:30 UTC</span></div>
-          <div className="flex justify-between"><span className="text-purple-400">Asia</span><span>00:00–02:00 UTC</span></div>
+          <div className="flex justify-between"><span className="text-indigo-400">Asia</span><span>01:00–05:00</span></div>
+          <div className="flex justify-between"><span className="text-blue-400">London</span><span>07:00–10:00</span></div>
+          <div className="flex justify-between"><span className="text-orange-400">NY AM</span><span>13:30–16:00</span></div>
+          <div className="flex justify-between"><span className="text-green-400">NY PM</span><span>18:30–21:00</span></div>
         </div>
       </div>
     </div>
