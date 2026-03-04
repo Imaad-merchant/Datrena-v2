@@ -87,7 +87,20 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
               <VolatilityHeatmap
                 hourlyVol={data.hourlyVol}
                 timeframe={timeframe}
-                onTimeframeChange={(tf) => { setTimeframe(tf); setTimeout(() => fetchData(), 0); }}
+                onTimeframeChange={async (tf) => {
+                  setTimeframe(tf);
+                  setLoading(true);
+                  setError(null);
+                  setData(null);
+                  try {
+                    const res = await base44.functions.invoke("fetchStockData", { symbol, days: lookbackDays, timeframe: tf });
+                    setData(res.data);
+                  } catch (e) {
+                    setError(e?.response?.data?.error || e.message || "Failed to fetch data");
+                  } finally {
+                    setLoading(false);
+                  }
+                }}
               />
               <AIChat context={aiContext} />
             </>
