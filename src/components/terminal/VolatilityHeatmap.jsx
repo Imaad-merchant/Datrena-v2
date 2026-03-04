@@ -62,7 +62,6 @@ export default function VolatilityHeatmap({ hourlyVol, previousHourlyVol, onTime
   if (!hourlyVol?.length) return null;
 
   const tzOffset = TIMEZONES.find(t => t.label === tz)?.offset ?? 0;
-  const shiftHour = (h) => ((h + tzOffset + 24) % 24);
 
   const maxRange = Math.max(...hourlyVol.map(h => h.avg_range));
   const maxVol = Math.max(...hourlyVol.map(h => h.avg_volume));
@@ -70,28 +69,33 @@ export default function VolatilityHeatmap({ hourlyVol, previousHourlyVol, onTime
   const prevMaxRange = previousHourlyVol?.length > 0 ? Math.max(...previousHourlyVol.map(h => h.avg_range)) : 0;
   const prevMaxVol = previousHourlyVol?.length > 0 ? Math.max(...previousHourlyVol.map(h => h.avg_volume)) : 0;
 
-  // Sort by display hour when local so bars stay in order
+  const getDisplayLabel = (d) => {
+    const date = new Date(d.timestamp * 1000);
+    const h = date.getUTCHours();
+    const m = date.getUTCMinutes();
+    const localH = (h + tzOffset + 24) % 24;
+    return `${String(localH).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+  };
+
   const data = [...hourlyVol]
     .map(h => ({
       ...h,
-      displayHour: shiftHour(h.hour),
-      session: SESSION_LABELS[h.hour] || "",
+      displayLabel: getDisplayLabel(h),
+      session: SESSION_LABELS[new Date(h.timestamp * 1000).getUTCHours()] || "",
       intensity: view === "range"
         ? (maxRange > 0 ? h.avg_range / maxRange : 0)
         : (maxVol > 0 ? h.avg_volume / maxVol : 0),
-    }))
-    .sort((a, b) => a.displayHour - b.displayHour);
+    }));
 
   const prevData = previousHourlyVol ? [...previousHourlyVol]
     .map(h => ({
       ...h,
-      displayHour: shiftHour(h.hour),
-      session: SESSION_LABELS[h.hour] || "",
+      displayLabel: getDisplayLabel(h),
+      session: SESSION_LABELS[new Date(h.timestamp * 1000).getUTCHours()] || "",
       intensity: view === "range"
         ? (prevMaxRange > 0 ? h.avg_range / prevMaxRange : 0)
         : (prevMaxVol > 0 ? h.avg_volume / prevMaxVol : 0),
-    }))
-    .sort((a, b) => a.displayHour - b.displayHour) : [];
+    })) : [];
 
   const dataKey = view === "range" ? "avg_range" : "avg_volume";
 
