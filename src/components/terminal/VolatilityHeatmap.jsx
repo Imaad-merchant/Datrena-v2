@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from "recharts";
 
 const SESSION_LABELS = {
@@ -24,48 +24,77 @@ const CustomTooltip = ({ active, payload }) => {
   const d = payload[0].payload;
   const session = SESSION_LABELS[d.hour] || "";
   return (
-    <div className="bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs">
-      <p className="text-gray-300">Hour: <span className="text-white font-bold">{d.hour}:00 UTC</span></p>
+    <div className="bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs space-y-1">
+      <p className="text-gray-300">Hour: <span className="text-white font-bold">{String(d.hour).padStart(2,'0')}:00 UTC</span></p>
       <p className="text-gray-300">Session: <span className="font-bold" style={{ color: SESSION_COLORS[session] }}>{session}</span></p>
-      <p className="text-gray-300">Avg Range: <span className="text-yellow-400 font-mono font-bold">{d.avg_range.toFixed(2)}</span></p>
+      <p className="text-gray-300">Avg Range: <span className="text-yellow-400 font-mono font-bold">{d.avg_range.toFixed(4)}</span></p>
+      <p className="text-gray-300">Avg Volume: <span className="text-blue-400 font-mono font-bold">{d.avg_volume > 0 ? (d.avg_volume >= 1e6 ? (d.avg_volume/1e6).toFixed(2)+'M' : (d.avg_volume/1e3).toFixed(0)+'K') : '—'}</span></p>
+      {d.count === 0 && <p className="text-gray-500 italic">No data for this hour</p>}
     </div>
   );
 };
 
 export default function VolatilityHeatmap({ hourlyVol }) {
+  const [view, setView] = useState("range"); // "range" | "volume"
+
   if (!hourlyVol?.length) return null;
 
   const maxRange = Math.max(...hourlyVol.map(h => h.avg_range));
+  const maxVol = Math.max(...hourlyVol.map(h => h.avg_volume));
 
   const data = hourlyVol.map(h => ({
     ...h,
     session: SESSION_LABELS[h.hour] || "",
-    intensity: h.avg_range / maxRange,
+    intensity: view === "range"
+      ? (maxRange > 0 ? h.avg_range / maxRange : 0)
+      : (maxVol > 0 ? h.avg_volume / maxVol : 0),
   }));
+
+  const dataKey = view === "range" ? "avg_range" : "avg_volume";
 
   return (
     <div className="bg-gray-900 border border-gray-800 rounded-xl p-4">
-      <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
-        Hourly Volatility Heatmap
-      </h2>
-      <p className="text-xs text-gray-600 mb-4">Average High-Low range by hour (UTC)</p>
-      <ResponsiveContainer width="100%" height={200}>
+      <div className="flex items-center justify-between mb-1">
+        <h2 className="text-sm font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-orange-400 inline-block" />
+          Hourly Heatmap · All 24 Hours
+        </h2>
+        <div className="flex gap-1">
+          {["range", "volume"].map(v => (
+            <button
+              key={v}
+              onClick={() => setView(v)}
+              className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+                view === v
+                  ? "bg-orange-500 border-orange-500 text-gray-900 font-semibold"
+                  : "border-gray-700 text-gray-400 hover:border-orange-500 hover:text-orange-400"
+              }`}
+            >
+              {v === "range" ? "Volatility" : "Volume"}
+            </button>
+          ))}
+        </div>
+      </div>
+      <p className="text-xs text-gray-600 mb-4">
+        {view === "range" ? "Average High-Low range by hour (UTC)" : "Average volume by hour (UTC)"}
+      </p>
+      <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <XAxis
             dataKey="hour"
             tick={{ fill: "#6b7280", fontSize: 10 }}
             tickLine={false}
-            tickFormatter={v => `${v}h`}
+            tickFormatter={v => `${String(v).padStart(2,'0')}h`}
+            interval={0}
           />
           <YAxis hide />
           <Tooltip content={<CustomTooltip />} cursor={{ fill: "#1f2937" }} />
-          <Bar dataKey="avg_range" radius={[3, 3, 0, 0]}>
+          <Bar dataKey={dataKey} radius={[3, 3, 0, 0]}>
             {data.map((entry, index) => (
               <Cell
                 key={`cell-${index}`}
-                fill={SESSION_COLORS[entry.session] || "#6b7280"}
-                opacity={0.4 + entry.intensity * 0.6}
+                fill={entry.count > 0 ? (SESSION_COLORS[entry.session] || "#6b7280") : "#1f2937"}
+                opacity={entry.count > 0 ? 0.35 + entry.intensity * 0.65 : 0.2}
               />
             ))}
           </Bar>

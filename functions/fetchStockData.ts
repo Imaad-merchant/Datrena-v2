@@ -1,21 +1,32 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.20';
 
+// Map our timeframe labels to Yahoo Finance interval/range combos
+const TF_MAP = {
+  '1m':   { interval: '1m',  range: '1d' },
+  '2m':   { interval: '2m',  range: '5d' },
+  '5m':   { interval: '5m',  range: '5d' },
+  '15m':  { interval: '15m', range: '5d' },
+  '30m':  { interval: '30m', range: '60d' },
+  '1h':   { interval: '1h',  range: '60d' },
+  '4h':   { interval: '60m', range: '60d' }, // Yahoo doesn't have 4h, use 60m
+  '1d':   { interval: '1d',  range: '1y' },
+};
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
     if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
 
-    const { symbol, days } = await req.json();
+    const { symbol, days, timeframe = '1h' } = await req.json();
 
-    const interval = days <= 7 ? '1h' : days <= 30 ? '1h' : '1d';
-    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${interval}&range=${days}d`;
+    const tf = TF_MAP[timeframe] || TF_MAP['1h'];
+    // Allow days to override range if provided
+    const range = days ? `${days}d` : tf.range;
+    const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=${tf.interval}&range=${range}`;
 
     const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0',
-        'Accept': 'application/json',
-      }
+      headers: { 'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json' }
     });
 
     if (!response.ok) {
@@ -24,10 +35,7 @@ Deno.serve(async (req) => {
 
     const json = await response.json();
     const result = json?.chart?.result?.[0];
-
-    if (!result) {
-      return Response.json({ error: 'No data returned for this symbol' }, { status: 400 });
-    }
+    if (!result) return Response.json({ error: 'No data returned for this symbol' }, { status: 400 });
 
     const timestamps = result.timestamp;
     const quote = result.indicators.quote[0];
@@ -48,50 +56,32 @@ Deno.serve(async (req) => {
       };
     }).filter(r => r.close != null);
 
-    // London session: 2am-5am UTC
-    const londonData = rows.filter(r => r.hour >= 2 && r.hour <= 5);
-    const londonCloses = londonData.map(r => r.close).filter(Boolean);
-    const lonMean = londonCloses.length > 0 ? londonCloses.reduce((a, b) => a + b, 0) / londonCloses.length : null;
-    const lonStd = londonCloses.length > 1
-      ? Math.sqrt(londonCloses.reduce((sum, v) => sum + Math.pow(v - lonMean, 2), 0) / (londonCloses.length - 1))
-      : null;
-
-    // Hourly volatility
+    // Hourly volume & volatility — all 24 hours
     const hourlyMap = {};
+    for (let h = 0; h < 24; h++) hourlyMap[h] = { ranges: [], volumes: [] };
+
     rows.forEach(r => {
-      if (r.hl_range != null) {
-        if (!hourlyMap[r.hour]) hourlyMap[r.hour] = [];
-        hourlyMap[r.hour].push(r.hl_range);
-      }
+      if (r.hl_range != null) hourlyMap[r.hour].ranges.push(r.hl_range);
+      if (r.volume != null) hourlyMap[r.hour].volumes.push(r.volume);
     });
-    const hourlyVol = Object.entries(hourlyMap).map(([hour, vals]) => ({
+
+    const hourlyVol = Object.entries(hourlyMap).map(([hour, { ranges, volumes }]) => ({
       hour: parseInt(hour),
-      avg_range: vals.reduce((a, b) => a + b, 0) / vals.length,
-    })).sort((a, b) => a.hour - b.hour);
+      avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
+      avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
+      count: ranges.length,
+    }));
 
     // NY open price (hour 13 UTC = 9am ET)
     const nyRows = rows.filter(r => r.hour === 13);
     const nyOpenPrice = nyRows.length > 0 ? nyRows[nyRows.length - 1].open : null;
 
-    const sdLevels = lonMean && lonStd ? {
-      mean: lonMean,
-      std: lonStd,
-      plus1: lonMean + lonStd,
-      plus1_5: lonMean + 1.5 * lonStd,
-      plus2: lonMean + 2 * lonStd,
-      plus2_5: lonMean + 2.5 * lonStd,
-      minus1: lonMean - lonStd,
-      minus1_5: lonMean - 1.5 * lonStd,
-      minus2: lonMean - 2 * lonStd,
-      minus2_5: lonMean - 2.5 * lonStd,
-    } : null;
-
     return Response.json({
       rows,
-      sdLevels,
       hourlyVol,
       nyOpenPrice,
       meta: result.meta,
+      timeframe,
     });
 
   } catch (error) {

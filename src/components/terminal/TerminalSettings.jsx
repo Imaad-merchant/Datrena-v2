@@ -6,8 +6,9 @@ import { Slider } from "@/components/ui/slider";
 import { Play, Loader2 } from "lucide-react";
 
 const COMMON_TICKERS = ["NQ=F", "ES=F", "SPY", "QQQ", "AAPL", "TSLA", "MSFT", "BTC-USD", "GC=F", "CL=F"];
+const TIMEFRAMES = ["1m", "2m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
-export default function TerminalSettings({ symbol, setSymbol, lookbackDays, setLookbackDays, onRun, loading }) {
+export default function TerminalSettings({ symbol, setSymbol, lookbackDays, setLookbackDays, timeframe, setTimeframe, onRun, loading }) {
   return (
     <div className="space-y-6">
       <div>
