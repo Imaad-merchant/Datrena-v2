@@ -102,6 +102,7 @@ Deno.serve(async (req) => {
     return Response.json({
       rows,
       hourlyVol,
+      previousHourlyVol,
       nyOpenPrice,
       meta: result.meta,
       timeframe,
