@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Terminal from './pages/Terminal';
+import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
@@ -57,4 +58,5 @@ export const PAGES = {
 export const pagesConfig = {
     mainPage: "Terminal",
     Pages: PAGES,
+    Layout: __Layout,
 };
