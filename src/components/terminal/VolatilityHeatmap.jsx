@@ -39,7 +39,14 @@ const CustomTooltip = ({ active, payload, tz }) => {
   );
 };
 
-const LOCAL_OFFSET = -new Date().getTimezoneOffset() / 60; // hours offset from UTC
+const TIMEZONES = [
+  { label: "UTC",  offset: 0 },
+  { label: "ET",   offset: -5 },
+  { label: "CT",   offset: -6 },
+  { label: "MT",   offset: -7 },
+  { label: "PT",   offset: -8 },
+  { label: "Local", offset: -new Date().getTimezoneOffset() / 60 },
+];
 
 export default function VolatilityHeatmap({ hourlyVol, onTimeframeChange, timeframe }) {
   const [view, setView] = useState("range"); // "range" | "volume"
