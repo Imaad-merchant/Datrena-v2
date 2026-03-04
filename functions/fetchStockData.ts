@@ -63,37 +63,60 @@ Deno.serve(async (req) => {
     const currentRows = rows.filter(r => r.dayStart === lastDay);
     const previousRows = rows.filter(r => r.dayStart < lastDay);
 
-    // Calculate hourly stats for current session
-    const hourlyMap = {};
-    for (let h = 0; h < 24; h++) hourlyMap[h] = { ranges: [], volumes: [] };
+    // Group by timeframe-based buckets instead of hours
+    const getTFBucket = (row, tf) => {
+      const date = new Date(row.timestamp * 1000);
+      const minutes = date.getUTCMinutes();
+      const hours = date.getUTCHours();
+      
+      if (tf === '1m') return row.timestamp; // each bar is its own bucket
+      if (tf === '2m') return Math.floor(row.timestamp / 120) * 120;
+      if (tf === '5m') return Math.floor(row.timestamp / 300) * 300;
+      if (tf === '15m') return Math.floor(row.timestamp / 900) * 900;
+      if (tf === '30m') return Math.floor(row.timestamp / 1800) * 1800;
+      if (tf === '1h') return hours; // return hour of day for 1h
+      if (tf === '4h') return Math.floor(hours / 4) * 4;
+      if (tf === '1d') return row.dayStart;
+      return hours;
+    };
 
+    // Calculate stats for current session
+    const tfMap = {};
     currentRows.forEach(r => {
-      if (r.hl_range != null) hourlyMap[r.hour].ranges.push(r.hl_range);
-      if (r.volume != null) hourlyMap[r.hour].volumes.push(r.volume);
+      const bucket = getTFBucket(r, timeframe);
+      if (!tfMap[bucket]) tfMap[bucket] = { ranges: [], volumes: [], timestamp: r.timestamp };
+      if (r.hl_range != null) tfMap[bucket].ranges.push(r.hl_range);
+      if (r.volume != null) tfMap[bucket].volumes.push(r.volume);
     });
 
-    const hourlyVol = Object.entries(hourlyMap).map(([hour, { ranges, volumes }]) => ({
-      hour: parseInt(hour),
-      avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
-      avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
-      count: ranges.length,
-    }));
+    const volData = Object.entries(tfMap)
+      .map(([bucket, { ranges, volumes, timestamp }]) => ({
+        hour: parseInt(bucket), // keep as 'hour' for compatibility with heatmap
+        timestamp,
+        avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
+        avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
+        count: ranges.length,
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
 
-    // Calculate hourly stats for previous sessions
-    const prevHourlyMap = {};
-    for (let h = 0; h < 24; h++) prevHourlyMap[h] = { ranges: [], volumes: [] };
-
+    // Calculate stats for previous sessions
+    const prevTFMap = {};
     previousRows.forEach(r => {
-      if (r.hl_range != null) prevHourlyMap[r.hour].ranges.push(r.hl_range);
-      if (r.volume != null) prevHourlyMap[r.hour].volumes.push(r.volume);
+      const bucket = getTFBucket(r, timeframe);
+      if (!prevTFMap[bucket]) prevTFMap[bucket] = { ranges: [], volumes: [], timestamp: r.timestamp };
+      if (r.hl_range != null) prevTFMap[bucket].ranges.push(r.hl_range);
+      if (r.volume != null) prevTFMap[bucket].volumes.push(r.volume);
     });
 
-    const previousHourlyVol = Object.entries(prevHourlyMap).map(([hour, { ranges, volumes }]) => ({
-      hour: parseInt(hour),
-      avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
-      avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
-      count: ranges.length,
-    }));
+    const prevVolData = Object.entries(prevTFMap)
+      .map(([bucket, { ranges, volumes, timestamp }]) => ({
+        hour: parseInt(bucket),
+        timestamp,
+        avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
+        avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
+        count: ranges.length,
+      }))
+      .sort((a, b) => a.timestamp - b.timestamp);
 
     // NY open price (hour 13 UTC = 9am ET)
     const nyRows = rows.filter(r => r.hour === 13);
