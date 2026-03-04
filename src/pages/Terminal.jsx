@@ -84,7 +84,11 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
 
           {data && !loading && (
             <>
-              <VolatilityHeatmap hourlyVol={data.hourlyVol} />
+              <VolatilityHeatmap
+                hourlyVol={data.hourlyVol}
+                timeframe={timeframe}
+                onTimeframeChange={(tf) => { setTimeframe(tf); }}
+              />
               <AIChat context={aiContext} />
             </>
           )}
