@@ -50,14 +50,12 @@ const TIMEZONES = [
 
 export default function VolatilityHeatmap({ hourlyVol, onTimeframeChange, timeframe }) {
   const [view, setView] = useState("range"); // "range" | "volume"
-  const [tz, setTz] = useState("UTC"); // "UTC" | "Local"
+  const [tz, setTz] = useState("UTC");
 
   if (!hourlyVol?.length) return null;
 
-  const maxRange = Math.max(...hourlyVol.map(h => h.avg_range));
-  const maxVol = Math.max(...hourlyVol.map(h => h.avg_volume));
-
-  const shiftHour = (h) => tz === "Local" ? ((h + LOCAL_OFFSET + 24) % 24) : h;
+  const tzOffset = TIMEZONES.find(t => t.label === tz)?.offset ?? 0;
+  const shiftHour = (h) => ((h + tzOffset + 24) % 24);
 
   // Sort by display hour when local so bars stay in order
   const data = [...hourlyVol]
