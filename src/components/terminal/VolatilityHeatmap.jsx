@@ -87,6 +87,21 @@ export default function VolatilityHeatmap({ hourlyVol, onTimeframeChange, timefr
             </SelectContent>
           </Select>
           <div className="flex gap-1">
+            {["UTC", "Local"].map(t => (
+              <button
+                key={t}
+                onClick={() => setTz(t)}
+                className={`text-xs px-2.5 py-1 rounded border transition-colors ${
+                  tz === t
+                    ? "bg-blue-600 border-blue-600 text-white font-semibold"
+                    : "border-gray-700 text-gray-400 hover:border-blue-500 hover:text-blue-400"
+                }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+          <div className="flex gap-1">
             {["range", "volume"].map(v => (
               <button
                 key={v}
