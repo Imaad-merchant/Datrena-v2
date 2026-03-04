@@ -18,7 +18,7 @@ const SESSION_COLORS = {
   "Pre-NY": "#a855f7",
   "NY Open": "#f59e0b",
   "NY AM": "#22c55e",
-  "NY PM": "#15803d",
+  "NY PM": "#0a2818",
   "NY Close": "#f97316",
   "After": "#6b7280",
 };
