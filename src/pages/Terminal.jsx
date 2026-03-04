@@ -1,8 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { base44 } from "@/api/base44Client";
 import TerminalSettings from "../components/terminal/TerminalSettings";
-import SDMetrics from "../components/terminal/SDMetrics";
-import PriceChart from "../components/terminal/PriceChart";
 import VolatilityHeatmap from "../components/terminal/VolatilityHeatmap";
 import AIChat from "../components/terminal/AIChat";
 import { AlertCircle, Loader2, Activity } from "lucide-react";
