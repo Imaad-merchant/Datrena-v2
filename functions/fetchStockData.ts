@@ -47,6 +47,7 @@ Deno.serve(async (req) => {
         timestamp: ts,
         date: date.toISOString(),
         hour: date.getUTCHours(),
+        dayStart: Math.floor(ts / 86400),
         open: open[i],
         high: high[i],
         low: low[i],
@@ -56,16 +57,38 @@ Deno.serve(async (req) => {
       };
     }).filter(r => r.close != null);
 
-    // Hourly volume & volatility — all 24 hours
+    // Separate current session (last day) from previous
+    const uniqueDays = [...new Set(rows.map(r => r.dayStart))];
+    const lastDay = Math.max(...uniqueDays);
+    const currentRows = rows.filter(r => r.dayStart === lastDay);
+    const previousRows = rows.filter(r => r.dayStart < lastDay);
+
+    // Calculate hourly stats for current session
     const hourlyMap = {};
     for (let h = 0; h < 24; h++) hourlyMap[h] = { ranges: [], volumes: [] };
 
-    rows.forEach(r => {
+    currentRows.forEach(r => {
       if (r.hl_range != null) hourlyMap[r.hour].ranges.push(r.hl_range);
       if (r.volume != null) hourlyMap[r.hour].volumes.push(r.volume);
     });
 
     const hourlyVol = Object.entries(hourlyMap).map(([hour, { ranges, volumes }]) => ({
+      hour: parseInt(hour),
+      avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
+      avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
+      count: ranges.length,
+    }));
+
+    // Calculate hourly stats for previous sessions
+    const prevHourlyMap = {};
+    for (let h = 0; h < 24; h++) prevHourlyMap[h] = { ranges: [], volumes: [] };
+
+    previousRows.forEach(r => {
+      if (r.hl_range != null) prevHourlyMap[r.hour].ranges.push(r.hl_range);
+      if (r.volume != null) prevHourlyMap[r.hour].volumes.push(r.volume);
+    });
+
+    const previousHourlyVol = Object.entries(prevHourlyMap).map(([hour, { ranges, volumes }]) => ({
       hour: parseInt(hour),
       avg_range: ranges.length > 0 ? ranges.reduce((a, b) => a + b, 0) / ranges.length : 0,
       avg_volume: volumes.length > 0 ? volumes.reduce((a, b) => a + b, 0) / volumes.length : 0,
