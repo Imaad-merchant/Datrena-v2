@@ -29,8 +29,8 @@ const CustomTooltip = ({ active, payload, tz }) => {
   const displayHour = d.displayHour ?? d.hour;
   return (
     <div className="bg-gray-900 border border-gray-700 rounded-lg p-2 text-xs space-y-1">
-      <p className="text-gray-300">Hour: <span className="text-white font-bold">{String(displayHour).padStart(2,'0')}:00 {tz === "Local" ? "Local" : "UTC"}</span></p>
-      {tz === "Local" && <p className="text-gray-500">UTC: {String(d.hour).padStart(2,'0')}:00</p>}
+      <p className="text-gray-300">Hour: <span className="text-white font-bold">{String(displayHour).padStart(2,'0')}:00 {tz}</span></p>
+      {tz !== "UTC" && <p className="text-gray-500">UTC: {String(d.hour).padStart(2,'0')}:00</p>}
       <p className="text-gray-300">Session: <span className="font-bold" style={{ color: SESSION_COLORS[session] }}>{session}</span></p>
       <p className="text-gray-300">Avg Range: <span className="text-yellow-400 font-mono font-bold">{d.avg_range.toFixed(4)}</span></p>
       <p className="text-gray-300">Avg Volume: <span className="text-blue-400 font-mono font-bold">{d.avg_volume > 0 ? (d.avg_volume >= 1e6 ? (d.avg_volume/1e6).toFixed(2)+'M' : (d.avg_volume/1e3).toFixed(0)+'K') : '—'}</span></p>
