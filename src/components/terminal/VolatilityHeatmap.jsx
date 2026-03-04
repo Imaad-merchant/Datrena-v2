@@ -6,10 +6,10 @@ const TIMEFRAMES = ["1m", "2m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
 const SESSION_LABELS = {
   0: "After", 1: "Asia", 2: "Asia", 3: "Asia", 4: "Asia",
-  5: "After", 6: "After", 7: "London", 8: "London", 9: "London", 10: "London",
-  11: "After", 12: "After", 13: "NY AM", 14: "NY AM", 15: "NY AM", 16: "NY AM",
-  17: "After", 18: "NY PM", 19: "NY PM", 20: "NY PM", 21: "NY PM",
-  22: "After", 23: "After",
+  5: "After", 6: "After", 7: "London", 8: "London", 9: "London",
+  10: "After", 11: "After", 12: "After", 13: "NY AM", 14: "NY AM", 15: "NY AM",
+  16: "After", 17: "After", 18: "NY PM", 19: "NY PM", 20: "NY PM",
+  21: "After", 22: "After", 23: "After",
 };
 
 const SESSION_COLORS = {
