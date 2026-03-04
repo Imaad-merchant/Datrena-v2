@@ -14,10 +14,6 @@ const TF_MAP = {
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    if (!user) return Response.json({ error: 'Unauthorized' }, { status: 401 });
-
     const { symbol, days, timeframe = '1h' } = await req.json();
 
     const tf = TF_MAP[timeframe] || TF_MAP['1h'];
