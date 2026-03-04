@@ -109,7 +109,7 @@ export default function VolatilityHeatmap({ hourlyVol, onTimeframeChange, timefr
       <ResponsiveContainer width="100%" height={220}>
         <BarChart data={data} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <XAxis
-            dataKey="hour"
+            dataKey="displayHour"
             tick={{ fill: "#6b7280", fontSize: 10 }}
             tickLine={false}
             tickFormatter={v => `${String(v).padStart(2,'0')}h`}
