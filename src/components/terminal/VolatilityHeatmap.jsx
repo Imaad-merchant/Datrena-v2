@@ -59,6 +59,9 @@ export default function VolatilityHeatmap({ hourlyVol, previousHourlyVol, onTime
 
   const maxRange = Math.max(...hourlyVol.map(h => h.avg_range));
   const maxVol = Math.max(...hourlyVol.map(h => h.avg_volume));
+  
+  const prevMaxRange = previousHourlyVol?.length > 0 ? Math.max(...previousHourlyVol.map(h => h.avg_range)) : 0;
+  const prevMaxVol = previousHourlyVol?.length > 0 ? Math.max(...previousHourlyVol.map(h => h.avg_volume)) : 0;
 
   // Sort by display hour when local so bars stay in order
   const data = [...hourlyVol]
@@ -71,6 +74,17 @@ export default function VolatilityHeatmap({ hourlyVol, previousHourlyVol, onTime
         : (maxVol > 0 ? h.avg_volume / maxVol : 0),
     }))
     .sort((a, b) => a.displayHour - b.displayHour);
+
+  const prevData = previousHourlyVol ? [...previousHourlyVol]
+    .map(h => ({
+      ...h,
+      displayHour: shiftHour(h.hour),
+      session: SESSION_LABELS[h.hour] || "",
+      intensity: view === "range"
+        ? (prevMaxRange > 0 ? h.avg_range / prevMaxRange : 0)
+        : (prevMaxVol > 0 ? h.avg_volume / prevMaxVol : 0),
+    }))
+    .sort((a, b) => a.displayHour - b.displayHour) : [];
 
   const dataKey = view === "range" ? "avg_range" : "avg_volume";
 
