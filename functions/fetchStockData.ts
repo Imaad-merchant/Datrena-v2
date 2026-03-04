@@ -15,6 +15,7 @@ const TF_MAP = {
 Deno.serve(async (req) => {
   try {
     const { symbol, days, timeframe = '1h' } = await req.json();
+    const base44 = createClientFromRequest(req);
 
     const tf = TF_MAP[timeframe] || TF_MAP['1h'];
     // Allow days to override range if provided
