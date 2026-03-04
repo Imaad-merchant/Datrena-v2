@@ -105,14 +105,13 @@ export default function VolatilityHeatmap({ hourlyVol, previousHourlyVol, onTime
       <ResponsiveContainer width="100%" height={180}>
         <BarChart data={volData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
           <XAxis
-            dataKey="displayHour"
+            dataKey="displayLabel"
             tick={{ fill: "#6b7280", fontSize: 10 }}
             tickLine={false}
-            tickFormatter={v => `${String(v).padStart(2,'0')}h`}
-            interval={5}
+            interval={Math.max(0, Math.floor(volData.length / 8))}
           />
           <YAxis hide />
-          <Tooltip content={<CustomTooltip tz={tz} />} cursor={{ fill: "#1f2937" }} />
+          <Tooltip content={<CustomTooltip tz={tz} timeframe={timeframe} />} cursor={{ fill: "#1f2937" }} />
           <Bar dataKey={dataKey} radius={[3, 3, 0, 0]}>
             {volData.map((entry, index) => (
               <Cell
