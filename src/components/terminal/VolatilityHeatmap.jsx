@@ -5,11 +5,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const TIMEFRAMES = ["1m", "2m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
 const SESSION_LABELS = {
-  0: "Asia", 1: "Asia", 2: "London", 3: "London", 4: "London",
-  5: "London", 6: "London", 7: "Pre-NY", 8: "Pre-NY",
-  9: "NY Open", 10: "NY", 11: "NY", 12: "NY", 13: "NY Open",
-  14: "NY", 15: "NY", 16: "NY Close", 17: "NY Close",
-  18: "After", 19: "After", 20: "After", 21: "Asia", 22: "Asia", 23: "Asia",
+  0: "Asia", 1: "Asia", 2: "Asia", 3: "Asia", 4: "Asia",
+  5: "London", 6: "London", 7: "London", 8: "London", 9: "London",
+  10: "NY AM", 11: "NY AM", 12: "NY AM", 13: "NY AM",
+  14: "NY PM", 15: "NY PM", 16: "NY PM", 17: "NY PM", 18: "NY PM",
+  19: "After", 20: "After", 21: "After", 22: "Asia", 23: "Asia",
 };
 
 const SESSION_COLORS = {
