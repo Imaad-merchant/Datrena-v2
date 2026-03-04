@@ -37,7 +37,7 @@ const CustomTooltip = ({ active, payload }) => {
   );
 };
 
-export default function VolatilityHeatmap({ hourlyVol }) {
+export default function VolatilityHeatmap({ hourlyVol, onTimeframeChange, timeframe }) {
   const [view, setView] = useState("range"); // "range" | "volume"
 
   if (!hourlyVol?.length) return null;
