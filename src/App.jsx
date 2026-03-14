@@ -37,6 +37,7 @@ const AuthenticatedApp = () => {
       return (
         <Routes>
           <Route path="/" element={<Landing />} />
+          <Route path="/Home" element={<Landing />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       );
@@ -48,6 +49,7 @@ const AuthenticatedApp = () => {
     return (
       <Routes>
         <Route path="/" element={<Navigate to="/QuantHome" replace />} />
+        <Route path="/Home" element={<Navigate to="/QuantHome" replace />} />
         <Route path="/QuantHome" element={<QuantHome />} />
         {Object.entries(Pages).map(([path, Page]) => (
           <Route
@@ -69,6 +71,7 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
+      <Route path="/Home" element={<Landing />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
