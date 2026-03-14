@@ -1,49 +1,186 @@
-import React from "react";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import React, { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { base44 } from "@/api/base44Client";
 import MainNav from "../components/navigation/MainNav";
-import { Lightbulb, FileText, Radio, Zap } from "lucide-react";
+import PropFirmCard from "../components/insight/PropFirmCard";
+import PerformanceStats from "../components/insight/PerformanceStats";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+const PROP_FIRMS = [
+  "TopStep", "Tradovate", "Apex", "Alpha Futures", "FTMO", 
+  "Earn2Trade", "The5ers", "Bulenox", "My Forex Funds"
+];
 
 export default function InsightLayer() {
-  const navigate = useNavigate();
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [selectedFirm, setSelectedFirm] = useState("");
+  const [accountId, setAccountId] = useState("");
+  const [apiKey, setApiKey] = useState("");
+  const queryClient = useQueryClient();
 
-  const tools = [
-    { name: "Edge Reports", icon: FileText, page: "EdgeReports", description: "Quantified trading edge and alpha generation" },
-    { name: "Signal Detection", icon: Radio, page: "SignalDetection", description: "Entry and exit signal identification" },
-    { name: "Strategy Ideas", icon: Zap, page: "StrategyIdeas", description: "Automated strategy generation and testing" }
-  ];
+  const { data: connections = [] } = useQuery({
+    queryKey: ['propConnections'],
+    queryFn: () => base44.entities.PropFirmConnection.list()
+  });
+
+  const { data: trades = [] } = useQuery({
+    queryKey: ['trades'],
+    queryFn: () => base44.entities.Trade.list()
+  });
+
+  const createConnection = useMutation({
+    mutationFn: (data) => base44.entities.PropFirmConnection.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['propConnections']);
+      setDialogOpen(false);
+      setSelectedFirm("");
+      setAccountId("");
+      setApiKey("");
+    }
+  });
+
+  const updateConnection = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.PropFirmConnection.update(id, data),
+    onSuccess: () => queryClient.invalidateQueries(['propConnections'])
+  });
+
+  const handleConnect = () => {
+    if (!selectedFirm || !accountId || !apiKey) return;
+    createConnection.mutate({
+      firm_name: selectedFirm,
+      account_id: accountId,
+      api_key: apiKey,
+      status: "connected",
+      last_sync: new Date().toISOString()
+    });
+  };
+
+  const handleDisconnect = (firm) => {
+    updateConnection.mutate({
+      id: firm.id,
+      data: { status: "disconnected" }
+    });
+  };
+
+  const connectedFirms = connections.filter(c => c.status === "connected");
+  const availableFirms = PROP_FIRMS.filter(
+    firm => !connections.find(c => c.firm_name === firm && c.status === "connected")
+  ).map(name => ({ name, status: "not_connected" }));
 
   return (
     <div className="min-h-screen bg-gray-950 pl-16">
       <MainNav />
-      <div className="max-w-7xl mx-auto px-6 py-12">
-        <div className="mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Insight Layer</h1>
-          <p className="text-xl text-gray-400">Transform analysis into actionable trading insights and strategies</p>
+      
+      <div className="border-b border-gray-800 bg-gray-900/60 px-6 py-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Insight Layer</h1>
+          <p className="text-sm text-gray-400">Track performance across connected prop firms</p>
         </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {tools.map((tool) => {
-            const Icon = tool.icon;
-            return (
-              <div
-                key={tool.page}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-yellow-500/50 transition-all cursor-pointer group"
-                onClick={() => navigate(createPageUrl(tool.page))}
-              >
-                <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center group-hover:bg-yellow-500/20 transition-colors">
-                    <Icon className="w-6 h-6 text-yellow-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white mb-2">{tool.name}</h3>
-                    <p className="text-gray-400 text-sm">{tool.description}</p>
-                  </div>
-                </div>
+        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+          <DialogTrigger asChild>
+            <Button className="bg-yellow-500 hover:bg-yellow-600 text-gray-950">
+              <Plus className="w-4 h-4 mr-2" />
+              Connect Firm
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="bg-gray-900 border-gray-800">
+            <DialogHeader>
+              <DialogTitle className="text-white">Connect Prop Firm</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <div>
+                <Label className="text-gray-300">Prop Firm</Label>
+                <Select value={selectedFirm} onValueChange={setSelectedFirm}>
+                  <SelectTrigger className="bg-gray-800 border-gray-700 text-white">
+                    <SelectValue placeholder="Select firm" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-700">
+                    {PROP_FIRMS.map(firm => (
+                      <SelectItem key={firm} value={firm} className="text-white">
+                        {firm}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-            );
-          })}
+              <div>
+                <Label className="text-gray-300">Account ID</Label>
+                <Input
+                  value={accountId}
+                  onChange={(e) => setAccountId(e.target.value)}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="Enter account ID"
+                />
+              </div>
+              <div>
+                <Label className="text-gray-300">API Key</Label>
+                <Input
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  className="bg-gray-800 border-gray-700 text-white"
+                  placeholder="Enter API key"
+                  type="password"
+                />
+              </div>
+              <Button 
+                onClick={handleConnect}
+                className="w-full bg-blue-600 hover:bg-blue-700"
+                disabled={!selectedFirm || !accountId || !apiKey}
+              >
+                Connect
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+
+      <div className="p-6 space-y-8">
+        {connectedFirms.length > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold text-white mb-4">Performance Statistics</h2>
+            <PerformanceStats trades={trades} />
+          </div>
+        )}
+
+        {connectedFirms.length > 0 && (
+          <div>
+            <h2 className="text-xl font-semibold text-white mb-4">Connected Firms</h2>
+            <div className="grid md:grid-cols-3 gap-4">
+              {connectedFirms.map((firm) => (
+                <PropFirmCard
+                  key={firm.id}
+                  firm={firm}
+                  onConnect={() => {}}
+                  onDisconnect={handleDisconnect}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div>
+          <h2 className="text-xl font-semibold text-white mb-4">
+            {connectedFirms.length > 0 ? "Available Firms" : "Connect Your First Prop Firm"}
+          </h2>
+          {availableFirms.length === 0 ? (
+            <p className="text-gray-500">All available firms are connected</p>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-4">
+              {availableFirms.map((firm, i) => (
+                <PropFirmCard
+                  key={i}
+                  firm={firm}
+                  onConnect={() => setDialogOpen(true)}
+                  onDisconnect={() => {}}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>
