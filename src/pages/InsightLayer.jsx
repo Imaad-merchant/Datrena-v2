@@ -78,14 +78,14 @@ export default function InsightLayer() {
       
       <div className="border-b border-gray-800 bg-gray-900/60 px-6 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Insight Layer</h1>
-          <p className="text-sm text-gray-400">Track performance across connected prop firms</p>
+          <h1 className="text-2xl font-bold text-white">Performance Statistics</h1>
+          <p className="text-sm text-gray-400">Track your trading performance across all prop firms</p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-yellow-500 hover:bg-yellow-600 text-gray-950">
-              <Plus className="w-4 h-4 mr-2" />
-              Connect Firm
+            <Button size="sm" variant="outline" className="border-gray-700 text-gray-300 hover:bg-gray-800">
+              <Plus className="w-3 h-3 mr-1" />
+              Connect
             </Button>
           </DialogTrigger>
           <DialogContent className="bg-gray-900 border-gray-800">
@@ -140,12 +140,9 @@ export default function InsightLayer() {
       </div>
 
       <div className="p-6 space-y-8">
-        {connectedFirms.length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold text-white mb-4">Performance Statistics</h2>
-            <PerformanceStats trades={trades} />
-          </div>
-        )}
+        <div>
+          <PerformanceStats trades={trades} />
+        </div>
 
         {connectedFirms.length > 0 && (
           <div>
@@ -162,26 +159,6 @@ export default function InsightLayer() {
             </div>
           </div>
         )}
-
-        <div>
-          <h2 className="text-xl font-semibold text-white mb-4">
-            {connectedFirms.length > 0 ? "Available Firms" : "Connect Your First Prop Firm"}
-          </h2>
-          {availableFirms.length === 0 ? (
-            <p className="text-gray-500">All available firms are connected</p>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-4">
-              {availableFirms.map((firm, i) => (
-                <PropFirmCard
-                  key={i}
-                  firm={firm}
-                  onConnect={() => setDialogOpen(true)}
-                  onDisconnect={() => {}}
-                />
-              ))}
-            </div>
-          )}
-        </div>
       </div>
     </div>
   );
