@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { base44 } from "@/api/base44Client";
 import MainNav from "../components/navigation/MainNav";
-import { Plus, ChevronDown, Maximize2 } from "lucide-react";
+import { Plus, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -72,74 +72,40 @@ export default function InsightLayer() {
   const winPercentage = totalTrades > 0 ? (winCount / totalTrades) * 100 : 0;
   const lossPercentage = totalTrades > 0 ? (lossCount / totalTrades) * 100 : 0;
 
-  // Calendar heatmap data (placeholder for now)
-  const calendarData = Array.from({ length: 7 }, (_, week) =>
-    Array.from({ length: 7 }, (_, day) => ({
-      value: Math.random() > 0.5 ? Math.random() * 200 - 100 : 0,
-      trades: Math.floor(Math.random() * 5)
-    }))
-  );
+  // Get current month/year
+  const now = new Date();
+  const currentMonth = now.toLocaleString('default', { month: 'long', year: 'numeric' });
+  
+  // Calendar heatmap data - empty when no trades
+  const getDaysInMonth = () => {
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    
+    const weeks = [];
+    let week = new Array(firstDay).fill(null);
+    
+    for (let day = 1; day <= daysInMonth; day++) {
+      week.push({ day, value: 0, trades: 0 });
+      if (week.length === 7) {
+        weeks.push(week);
+        week = [];
+      }
+    }
+    if (week.length > 0) {
+      while (week.length < 7) week.push(null);
+      weeks.push(week);
+    }
+    return weeks;
+  };
+  
+  const calendarData = getDaysInMonth();
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] pl-16 flex">
+    <div className="min-h-screen bg-[#0a0a0a] pl-16">
       <MainNav />
       
-      {/* Sidebar */}
-      <div className="w-64 bg-[#111111] border-r border-gray-800 flex flex-col">
-        <div className="p-4 border-b border-gray-800">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-orange-500 rounded-lg" />
-              <span className="text-white text-sm font-semibold">Leaderboard</span>
-            </div>
-            <ChevronDown className="w-4 h-4 text-gray-500" />
-          </div>
-          <Input placeholder="Search" className="bg-[#1a1a1a] border-gray-800 text-white text-sm" />
-        </div>
-
-        <div className="flex-1 p-4">
-          <div className="text-xs text-gray-500 mb-2">Overview</div>
-          <div className="space-y-1">
-            <div className="bg-yellow-400 text-black px-4 py-2 rounded-lg font-semibold text-sm cursor-pointer">
-              Leaderboard
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              Withdrawals
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              Leaderboards
-            </div>
-          </div>
-
-          <div className="text-xs text-gray-500 mb-2 mt-6">Payout Status</div>
-          <div className="space-y-1">
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              My Ideas
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              My Offers
-            </div>
-          </div>
-
-          <div className="text-xs text-gray-500 mb-2 mt-6">Resources</div>
-          <div className="space-y-1">
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              Challenges
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              Certificates
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              FAQs
-            </div>
-            <div className="text-gray-400 px-4 py-2 hover:bg-gray-800 rounded-lg text-sm cursor-pointer">
-              University
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
       <div className="flex-1">
         <div className="border-b border-gray-800 bg-[#0f0f0f] px-6 py-3 flex items-center justify-between">
           <h1 className="text-white text-lg font-semibold">Trades Summary</h1>
@@ -328,7 +294,7 @@ export default function InsightLayer() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-4">
                 <button className="text-gray-500 hover:text-white">←</button>
-                <h3 className="text-white font-semibold">September 2023</h3>
+                <h3 className="text-white font-semibold">{currentMonth}</h3>
                 <button className="text-gray-500 hover:text-white">→</button>
               </div>
               <button className="text-gray-500 hover:text-white">
@@ -339,12 +305,12 @@ export default function InsightLayer() {
             {/* Stats Cards */}
             <div className="grid grid-cols-5 gap-4 mb-6">
               {[
-                { label: "Total Trades", value: totalTrades },
-                { label: "P&L", value: "123" },
-                { label: "Win%", value: `${winPercentage.toFixed(0)}%` },
-                { label: "Total Sales", value: "123" },
-                { label: "Losing Days", value: lossCount },
-                { label: "Winning Days", value: winCount }
+                { label: "Total Trades", value: totalTrades > 0 ? totalTrades : "N/A" },
+                { label: "P&L", value: totalTrades > 0 ? `$${(totalWins - Math.abs(losingTrades.reduce((s, t) => s + t.pnl, 0))).toFixed(2)}` : "N/A" },
+                { label: "Win%", value: totalTrades > 0 ? `${winPercentage.toFixed(0)}%` : "N/A" },
+                { label: "Total Sales", value: "N/A" },
+                { label: "Losing Days", value: totalTrades > 0 ? lossCount : "N/A" },
+                { label: "Winning Days", value: totalTrades > 0 ? winCount : "N/A" }
               ].map((stat, i) => (
                 <div key={i} className="bg-[#1a1a1a] border border-gray-800 rounded-lg p-4">
                   <div className="text-xs text-gray-500 mb-1 flex items-center gap-1">
@@ -371,14 +337,16 @@ export default function InsightLayer() {
                     <div
                       key={dayIdx}
                       className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs ${
-                        day.value > 0
+                        day === null
+                          ? "bg-transparent"
+                          : day.value > 0
                           ? "bg-green-600 text-white"
                           : day.value < 0
                           ? "bg-red-600 text-white"
                           : "bg-[#1a1a1a] text-gray-600"
                       }`}
                     >
-                      {day.value !== 0 && (
+                      {day && day.value !== 0 && (
                         <>
                           <div className="font-bold">${Math.abs(day.value).toFixed(0)}</div>
                           <div className="text-[10px]">{day.trades} trades</div>
