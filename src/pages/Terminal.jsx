@@ -3,11 +3,9 @@ import { base44 } from "@/api/base44Client";
 import TerminalSettings from "../components/terminal/TerminalSettings";
 import VolatilityHeatmap from "../components/terminal/VolatilityHeatmap";
 import AIChat from "../components/terminal/AIChat";
-import { AlertCircle, Loader2, Activity, BarChart3 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import MainNav from "../components/navigation/MainNav";
+import { AlertCircle, Loader2, Activity } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
 
 export default function Terminal() {
   const navigate = useNavigate();
@@ -45,26 +43,16 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100">
-      <div className="border-b border-gray-800 bg-gray-900/80 backdrop-blur px-6 py-4 flex items-center gap-3">
-         <Activity className="w-6 h-6 text-yellow-400" />
-         <h1 className="text-xl font-bold tracking-wide text-white">Quantative Analyzer</h1>
-         <Button
-           variant="outline"
-           size="sm"
-           onClick={() => navigate(createPageUrl("FootprintChart"))}
-           className="ml-4 gap-2"
-         >
-           <BarChart3 className="w-4 h-4" />
-           Footprint Chart
-         </Button>
+      <MainNav />
+      <div className="border-b border-gray-800 bg-gray-900/60 px-6 py-3 flex items-center gap-3">
         {data && (
-          <span className="ml-auto text-sm text-gray-400">
+          <span className="text-sm text-gray-400">
             {data.meta?.longName || symbol} · {data.rows.length} bars
           </span>
         )}
       </div>
 
-      <div className="flex h-[calc(100vh-65px)]">
+      <div className="flex h-[calc(100vh-110px)]">
         {/* Sidebar */}
         <div className="w-72 border-r border-gray-800 bg-gray-900 p-4 flex-shrink-0 overflow-y-auto">
           <TerminalSettings

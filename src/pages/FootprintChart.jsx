@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Activity, ArrowLeft, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
+import MainNav from "../components/navigation/MainNav";
 import { base44 } from "@/api/base44Client";
 
 const WS_URL = "wss://elsa-censureless-joyce.ngrok-free.dev";
@@ -12,7 +11,6 @@ const CELL_H = 22;
 const CELL_W = 66;
 
 export default function FootprintChart() {
-  const navigate = useNavigate();
   const [candles, setCandles] = useState({});
   const [ohlc, setOhlc] = useState({});
   const [status, setStatus] = useState("disconnected");
@@ -210,13 +208,10 @@ export default function FootprintChart() {
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#e0e0e0", fontFamily: "monospace" }}>
+      <MainNav />
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid #1e1e2e", background: "#0f0f1a", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl("Terminal"))} style={{ color: "#666" }}>
-          <ArrowLeft size={16} />
-        </Button>
-        <Activity size={18} color="#f59e0b" />
         <span style={{ fontWeight: 600, fontSize: 15, fontFamily: "sans-serif", color: "#fff" }}>NQM5 · Footprint</span>
 
         {/* Timeframe buttons */}
