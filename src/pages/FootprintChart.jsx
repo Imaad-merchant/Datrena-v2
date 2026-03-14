@@ -6,14 +6,44 @@ import { createPageUrl } from "@/utils";
 
 const WS_URL = "wss://elsa-censureless-joyce.ngrok-free.dev";
 const TICK_SIZE = 0.25;
-const MAX_CANDLES = 15;
+const MAX_CANDLES = 20;
+const CELL_H = 22;
+const CELL_W = 64;
 
 export default function FootprintChart() {
   const navigate = useNavigate();
   const [candles, setCandles] = useState({});
   const [ohlc, setOhlc] = useState({});
   const [status, setStatus] = useState("disconnected");
+  const chartRef = useRef(null);
+  const tvChartRef = useRef(null);
+  const seriesRef = useRef(null);
   const wsRef = useRef(null);
+
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js";
+    script.onload = () => {
+      if (!chartRef.current || tvChartRef.current) return;
+      const chart = window.LightweightCharts.createChart(chartRef.current, {
+        width: chartRef.current.clientWidth,
+        height: 220,
+        layout: { background: { color: "#0a0a0f" }, textColor: "#666" },
+        grid: { vertLines: { color: "#1a1a2e" }, horzLines: { color: "#1a1a2e" } },
+        rightPriceScale: { borderColor: "#1e1e2e" },
+        timeScale: { borderColor: "#1e1e2e", timeVisible: true },
+      });
+      const series = chart.addCandlestickSeries({
+        upColor: "#16a34a", downColor: "#dc2626",
+        borderUpColor: "#22c55e", borderDownColor: "#ef4444",
+        wickUpColor: "#22c55e", wickDownColor: "#ef4444",
+      });
+      tvChartRef.current = chart;
+      seriesRef.current = series;
+    };
+    document.head.appendChild(script);
+    return () => { try { document.head.removeChild(script); } catch(e) {} };
+  }, []);
 
   useEffect(() => {
     const ws = new WebSocket(WS_URL);
@@ -24,8 +54,10 @@ export default function FootprintChart() {
     ws.onmessage = (e) => {
       const d = JSON.parse(e.data);
       if (d.type !== "trade") return;
-      const bucket = new Date(d.timestamp).toISOString().slice(0, 16);
+      const ts = new Date(d.timestamp);
+      const bucket = ts.toISOString().slice(0, 16);
       const pl = Math.round(d.price / TICK_SIZE) * TICK_SIZE;
+
       setCandles(prev => {
         const c = { ...prev };
         if (!c[bucket]) c[bucket] = {};
@@ -34,12 +66,18 @@ export default function FootprintChart() {
         c[bucket][pl].a += d.ask_volume || 0;
         return c;
       });
+
       setOhlc(prev => {
         const o = { ...prev };
-        if (!o[bucket]) o[bucket] = { o: d.price, h: d.price, l: d.price, c: d.price };
-        o[bucket].h = Math.max(o[bucket].h, d.price);
-        o[bucket].l = Math.min(o[bucket].l, d.price);
-        o[bucket].c = d.price;
+        const t = Math.floor(ts.getTime() / 60000) * 60;
+        if (!o[bucket]) o[bucket] = { time: t, open: d.price, high: d.price, low: d.price, close: d.price };
+        o[bucket].high = Math.max(o[bucket].high, d.price);
+        o[bucket].low = Math.min(o[bucket].low, d.price);
+        o[bucket].close = d.price;
+        if (seriesRef.current) {
+          const bars = Object.values({ ...o }).sort((a, b) => a.time - b.time);
+          seriesRef.current.setData(bars);
+        }
         return o;
       });
     };
@@ -50,9 +88,6 @@ export default function FootprintChart() {
   const allPrices = new Set();
   buckets.forEach(b => Object.keys(candles[b]).forEach(p => allPrices.add(parseFloat(p))));
   const prices = Array.from(allPrices).sort((a, b) => b - a);
-  const minP = prices.length ? Math.min(...prices) : 0;
-  const maxP = prices.length ? Math.max(...prices) : 1;
-  const range = maxP - minP || 1;
 
   const volProfile = {};
   buckets.forEach(b => {
@@ -62,145 +97,110 @@ export default function FootprintChart() {
   });
   const maxVol = Math.max(...Object.values(volProfile), 1);
 
-  const cellH = 24;
-  const candleW = 80;
-
   return (
-    <div style={{ minHeight: "100vh", background: "#131722", color: "#d1d4dc", fontFamily: "-apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif" }}>
-      <div style={{ borderBottom: "1px solid #2a2e39", background: "#1e222d", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
-        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl("Terminal"))} style={{ color: "#787b86", background: "transparent", border: "none" }}>
-          <ArrowLeft size={18} />
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#e0e0e0", fontFamily: "monospace" }}>
+
+      <div style={{ borderBottom: "1px solid #1e1e2e", background: "#0f0f1a", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl("Terminal"))} style={{ color: "#666" }}>
+          <ArrowLeft size={16} />
         </Button>
-        <span style={{ fontWeight: 500, fontSize: 14, color: "#d1d4dc", letterSpacing: "0.3px" }}>NQM5 · Footprint Chart</span>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: status === "connected" ? "#26a69a" : status === "error" ? "#ef5350" : "#787b86" }} />
-          <span style={{ color: "#787b86", textTransform: "uppercase", fontSize: 11, letterSpacing: "0.5px" }}>{status}</span>
+        <Activity size={18} color="#f59e0b" />
+        <span style={{ fontWeight: 600, fontSize: 15, fontFamily: "sans-serif", color: "#fff" }}>NQM5 · Footprint</span>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: status === "connected" ? "#22c55e" : status === "error" ? "#ef4444" : "#555" }} />
+          <span style={{ color: "#888", fontFamily: "sans-serif" }}>{status}</span>
         </div>
       </div>
 
+      <div ref={chartRef} style={{ width: "100%", height: 220, borderBottom: "1px solid #1e1e2e" }} />
+
       {status !== "connected" || buckets.length === 0 ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 400, color: "#787b86", fontSize: 13 }}>
-          {status === "connected" ? "Waiting for market data..." : "Connecting..."}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 200, color: "#555", fontSize: 13, fontFamily: "sans-serif" }}>
+          {status === "connected" ? "Waiting for data..." : "Connecting..."}
         </div>
       ) : (
-        <div style={{ overflowX: "auto", overflowY: "auto", padding: 0, background: "#131722" }}>
-          <div style={{ display: "flex", alignItems: "flex-start", minHeight: "calc(100vh - 50px)" }}>
+        <div style={{ overflowX: "auto", padding: "12px 8px" }}>
+          <div style={{ display: "flex", alignItems: "flex-start" }}>
 
-            {/* Volume profile */}
-            <div style={{ display: "flex", flexDirection: "column", background: "#1e222d", borderRight: "1px solid #2a2e39" }}>
+            <div style={{ display: "flex", flexDirection: "column", marginRight: 2 }}>
               {prices.map(p => {
                 const v = volProfile[p] || 0;
-                const w = Math.round((v / maxVol) * 60);
+                const w = Math.round((v / maxVol) * 48);
                 return (
-                  <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 4 }}>
-                    <div style={{ height: 16, width: w, background: "#2962ff", opacity: 0.3 }} />
+                  <div key={p} style={{ height: CELL_H, display: "flex", alignItems: "center", justifyContent: "flex-end", width: 52 }}>
+                    <div style={{ height: 14, width: w, background: v > maxVol * 0.7 ? "#7c3aed" : "#1d4e89", borderRadius: 1 }} />
                   </div>
                 );
               })}
             </div>
 
-            {/* Price axis */}
-            <div style={{ display: "flex", flexDirection: "column", background: "#1e222d", borderRight: "1px solid #2a2e39", minWidth: 70 }}>
+            <div style={{ display: "flex", flexDirection: "column", marginRight: 6, minWidth: 58 }}>
               {prices.map(p => (
-                <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end", fontSize: 11, color: "#787b86", paddingRight: 8, fontWeight: 500 }}>
+                <div key={p} style={{ height: CELL_H, display: "flex", alignItems: "center", justifyContent: "flex-end", fontSize: 10, color: "#555", paddingRight: 4, borderRight: "1px solid #1e1e2e" }}>
                   {p.toFixed(2)}
                 </div>
               ))}
             </div>
 
-            {/* Candle columns */}
-            <div style={{ display: "flex", background: "#131722" }}>
-              {buckets.map(bucket => {
-                const bar = ohlc[bucket] || {};
-                const isGreen = bar.c >= bar.o;
-                const bodyTop = maxP - Math.max(bar.o, bar.c);
-                const bodyH = Math.abs(bar.c - bar.o);
-                const wickTop = maxP - bar.h;
-                const wickH = bar.h - bar.l;
-                const delta = Object.values(candles[bucket] || {}).reduce((s, v) => s + (v.a - v.b), 0);
-                const totalVol = Object.values(candles[bucket] || {}).reduce((s, v) => s + v.a + v.b, 0);
+            {buckets.map((bucket, bi) => {
+              const delta = Object.values(candles[bucket] || {}).reduce((s, v) => s + (v.a - v.b), 0);
+              const totalVol = Object.values(candles[bucket] || {}).reduce((s, v) => s + v.a + v.b, 0);
+              const isLast = bi === buckets.length - 1;
 
-                return (
-                  <div key={bucket} style={{ display: "flex", flexDirection: "column", borderRight: "1px solid #2a2e39" }}>
+              return (
+                <div key={bucket} style={{ display: "flex", flexDirection: "column", marginRight: 1, outline: isLast ? "1px solid #2a3a5e" : "none" }}>
+                  {prices.map(p => {
+                    const cell = (candles[bucket] || {})[p] || { b: 0, a: 0 };
+                    const total = cell.b + cell.a;
+                    const askDom = cell.a >= cell.b;
+                    const imbalance = total > 0 && (
+                      (cell.b > 0 && cell.a / cell.b >= 3) ||
+                      (cell.a > 0 && cell.b / cell.a >= 3)
+                    );
+                    const isPOC = volProfile[p] === maxVol;
+                    const intensity = total > 0 ? Math.min(Math.max(cell.b, cell.a) / 300, 1) : 0;
+                    const bg = total === 0 ? "#0d0d14"
+                      : askDom ? `rgba(22,163,74,${0.1 + intensity * 0.5})`
+                      : `rgba(220,38,38,${0.1 + intensity * 0.5})`;
 
-                    {/* Candlestick */}
-                    <div style={{ position: "relative", width: candleW, height: prices.length * cellH * 0.25, minHeight: 80, background: "#1e222d", borderBottom: "1px solid #2a2e39" }}>
-                      <div style={{
-                        position: "absolute", left: "50%", transform: "translateX(-50%)",
-                        top: `${(wickTop / range) * 100}%`,
-                        height: `${(wickH / range) * 100}%`,
-                        width: 1, background: isGreen ? "#089981" : "#f23645"
-                      }} />
-                      <div style={{
-                        position: "absolute", left: "50%", transform: "translateX(-50%)",
-                        top: `${(bodyTop / range) * 100}%`,
-                        height: `${Math.max((bodyH / range) * 100, 2)}%`,
-                        width: 16, background: isGreen ? "#089981" : "#f23645", border: isGreen ? "1px solid #089981" : "1px solid #f23645"
-                      }} />
-                    </div>
+                    return (
+                      <div key={p} style={{
+                        height: CELL_H, width: CELL_W, background: bg,
+                        border: imbalance ? "1px solid rgba(255,255,255,0.6)"
+                          : isPOC ? "1px solid #f59e0b"
+                          : "1px solid #111827",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        fontSize: 9, fontWeight: 700,
+                        color: total === 0 ? "transparent" : askDom ? "#86efac" : "#fca5a5",
+                      }}>
+                        {total > 0 ? `${cell.b} × ${cell.a}` : ""}
+                      </div>
+                    );
+                  })}
 
-                    {/* Footprint cells */}
-                    {prices.map(p => {
-                      const cell = (candles[bucket] || {})[p] || { b: 0, a: 0 };
-                      const total = cell.b + cell.a;
-                      const askDom = cell.a > cell.b;
-                      const imbalance = total > 0 && ((cell.b > 0 ? cell.a / cell.b >= 3 : false) || (cell.a > 0 ? cell.b / cell.a >= 3 : false));
-                      const intensity = total > 0 ? Math.min((Math.max(cell.b, cell.a) / 150), 1) : 0;
-                      const bg = total === 0 ? "#131722" :
-                        askDom ? `rgba(8,153,129,${0.1 + intensity * 0.5})` : `rgba(242,54,69,${0.1 + intensity * 0.5})`;
-
-                      return (
-                        <div key={p} style={{
-                          height: cellH, width: candleW,
-                          background: bg,
-                          borderBottom: "1px solid #2a2e39",
-                          borderRight: imbalance ? "2px solid #ffffff" : "none",
-                          borderLeft: imbalance ? "2px solid #ffffff" : "none",
-                          display: "flex", alignItems: "center", justifyContent: "center",
-                          fontSize: 10, fontWeight: 600, fontFamily: "monospace",
-                          color: total === 0 ? "transparent" : askDom ? "#089981" : "#f23645"
-                        }}>
-                          {total > 0 ? `${cell.b} × ${cell.a}` : ""}
-                        </div>
-                      );
-                    })}
-
-                    {/* Delta row */}
-                    <div style={{ 
-                      height: 26, width: candleW, 
-                      display: "flex", alignItems: "center", justifyContent: "center", 
-                      fontSize: 11, fontWeight: 700, 
-                      borderBottom: "1px solid #2a2e39",
-                      background: delta > 0 ? "rgba(8,153,129,0.1)" : delta < 0 ? "rgba(242,54,69,0.1)" : "#1e222d",
-                      color: delta > 0 ? "#089981" : delta < 0 ? "#f23645" : "#787b86"
-                    }}>
-                      {delta > 0 ? "+" : ""}{delta}
-                    </div>
-
-                    {/* Volume row */}
-                    <div style={{ 
-                      height: 24, width: candleW, 
-                      display: "flex", alignItems: "center", justifyContent: "center", 
-                      fontSize: 10, color: "#787b86", 
-                      borderBottom: "1px solid #2a2e39",
-                      background: "#1e222d"
-                    }}>
-                      {totalVol}
-                    </div>
-
-                    {/* Time label */}
-                    <div style={{ 
-                      height: 22, width: candleW, 
-                      display: "flex", alignItems: "center", justifyContent: "center", 
-                      fontSize: 10, color: "#787b86",
-                      background: "#1e222d"
-                    }}>
-                      {bucket.slice(11, 16)}
-                    </div>
+                  <div style={{ height: 22, width: CELL_W, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 10, fontWeight: 800, borderTop: "1px solid #1e1e2e", background: delta >= 0 ? "rgba(96,165,250,0.08)" : "rgba(244,114,182,0.08)", color: delta >= 0 ? "#60a5fa" : "#f472b6" }}>
+                    {delta > 0 ? "+" : ""}{delta}
                   </div>
-                );
-              })}
-            </div>
+
+                  <div style={{ height: 18, width: CELL_W, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#444", borderTop: "1px solid #111" }}>
+                    {totalVol.toLocaleString()}
+                  </div>
+
+                  <div style={{ height: 16, width: CELL_W, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#333", borderTop: "1px solid #111" }}>
+                    {bucket.slice(11, 16)}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          <div style={{ display: "flex", gap: 16, marginTop: 10, paddingLeft: 116, fontSize: 10, color: "#555", fontFamily: "sans-serif" }}>
+            <span><span style={{ color: "#86efac" }}>■</span> Ask dominant</span>
+            <span><span style={{ color: "#fca5a5" }}>■</span> Bid dominant</span>
+            <span style={{ border: "1px solid rgba(255,255,255,0.4)", padding: "0 4px" }}>Imbalance 3:1</span>
+            <span><span style={{ color: "#f59e0b" }}>■</span> POC</span>
+            <span><span style={{ color: "#60a5fa" }}>■</span> Delta +</span>
+            <span><span style={{ color: "#f472b6" }}>■</span> Delta −</span>
           </div>
         </div>
       )}
