@@ -33,7 +33,7 @@ export default function FootprintChart() {
         rightPriceScale: { borderColor: "#1e1e2e" },
         timeScale: { borderColor: "#1e1e2e", timeVisible: true },
       });
-      const series = chart.addCandlestickSeries({
+      const series = chart.addSeries(window.LightweightCharts.SeriesType.Candlestick, {
         upColor: "#16a34a", downColor: "#dc2626",
         borderUpColor: "#22c55e", borderDownColor: "#ef4444",
         wickUpColor: "#22c55e", wickDownColor: "#ef4444",
