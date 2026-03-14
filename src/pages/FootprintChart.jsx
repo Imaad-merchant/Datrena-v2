@@ -44,10 +44,18 @@ export default function FootprintChart() {
 
   // Group trades into candles by time bucket
   const candleMap = {};
+  const candleOHLC = {}; // Track OHLC for candlestick bars
+  
   trades.forEach(trade => {
     const timeBucket = new Date(trade.timestamp).toISOString().slice(0, 16); // 1-minute buckets
     if (!candleMap[timeBucket]) {
       candleMap[timeBucket] = { timeBucket, priceLevels: {} };
+      candleOHLC[timeBucket] = { 
+        open: trade.price, 
+        high: trade.price, 
+        low: trade.price, 
+        close: trade.price 
+      };
     }
     
     const priceLevel = Math.round(trade.price * 4) / 4; // Round to 0.25 tick
@@ -57,6 +65,11 @@ export default function FootprintChart() {
     
     candleMap[timeBucket].priceLevels[priceLevel].bidVolume += trade.bid_volume || 0;
     candleMap[timeBucket].priceLevels[priceLevel].askVolume += trade.ask_volume || 0;
+    
+    // Update OHLC
+    candleOHLC[timeBucket].high = Math.max(candleOHLC[timeBucket].high, trade.price);
+    candleOHLC[timeBucket].low = Math.min(candleOHLC[timeBucket].low, trade.price);
+    candleOHLC[timeBucket].close = trade.price;
   });
 
   const candles = Object.values(candleMap).slice(-20); // Show last 20 candles
@@ -67,6 +80,9 @@ export default function FootprintChart() {
     Object.keys(candle.priceLevels).forEach(price => allPrices.add(parseFloat(price)));
   });
   const sortedPrices = Array.from(allPrices).sort((a, b) => b - a); // Descending
+  
+  const minPrice = Math.min(...sortedPrices);
+  const maxPrice = Math.max(...sortedPrices);
 
   // Calculate volume profile (total volume at each price)
   const volumeProfile = {};
@@ -124,100 +140,145 @@ export default function FootprintChart() {
         )}
 
         {connectionStatus === "connected" && candles.length > 0 && (
-          <div className="flex gap-0 bg-gray-950 p-4">
-            {/* Volume Profile */}
-            <div className="flex flex-col-reverse gap-0 pr-2 border-r border-gray-700">
-              {sortedPrices.map(price => {
-                const vol = volumeProfile[price] || 0;
-                const width = (vol / maxProfileVolume) * 60;
-                return (
-                  <div key={price} className="h-7 flex items-center justify-end">
-                    <div 
-                      className="h-5 bg-blue-600/40" 
-                      style={{ width: `${width}px` }}
-                    />
+          <div className="bg-black p-6">
+            <div className="flex gap-0">
+              {/* Volume Profile */}
+              <div className="flex flex-col-reverse gap-0 pr-3 border-r border-gray-800">
+                {sortedPrices.map(price => {
+                  const vol = volumeProfile[price] || 0;
+                  const width = (vol / maxProfileVolume) * 50;
+                  const isRed = vol > 0 && volumeProfile[price] > maxProfileVolume * 0.5;
+                  return (
+                    <div key={price} className="h-6 flex items-center justify-end">
+                      <div 
+                        className={`h-4 ${isRed ? 'bg-red-600' : 'bg-green-600'}`}
+                        style={{ width: `${width}px` }}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Price Axis */}
+              <div className="flex flex-col-reverse gap-0 pr-3 border-r border-gray-800">
+                {sortedPrices.map(price => (
+                  <div key={price} className="h-6 flex items-center text-[10px] font-mono text-gray-400 px-2">
+                    {price.toFixed(2)}
                   </div>
-                );
-              })}
-            </div>
+                ))}
+              </div>
 
-            {/* Price Axis */}
-            <div className="flex flex-col-reverse gap-0 pr-2 border-r border-gray-700">
-              {sortedPrices.map(price => (
-                <div key={price} className="h-7 flex items-center text-xs font-mono text-gray-400 px-2">
-                  {price.toFixed(2)}
-                </div>
-              ))}
-            </div>
+              {/* Candle Columns with Candlestick bars on top */}
+              <div className="flex gap-0 overflow-x-auto">
+                {candles.map((candle, candleIdx) => {
+                  const ohlc = candleOHLC[candle.timeBucket];
+                  const isGreen = ohlc.close >= ohlc.open;
+                  
+                  // Calculate cumulative delta and regular delta
+                  const cumulativeDelta = Object.values(candle.priceLevels).reduce(
+                    (sum, vol) => sum + (vol.askVolume - vol.bidVolume), 0
+                  );
+                  const totalVolume = Object.values(candle.priceLevels).reduce(
+                    (sum, vol) => sum + vol.bidVolume + vol.askVolume, 0
+                  );
 
-            {/* Candle Columns */}
-            <div className="flex gap-0 overflow-x-auto">
-              {candles.map((candle, candleIdx) => {
-                // Calculate cumulative delta for this candle
-                const cumulativeDelta = Object.values(candle.priceLevels).reduce(
-                  (sum, vol) => sum + (vol.askVolume - vol.bidVolume), 0
-                );
-
-                return (
-                  <div key={candleIdx} className="flex flex-col gap-0">
-                    {/* Price cells */}
-                    <div className="flex flex-col-reverse gap-0">
-                      {sortedPrices.map(price => {
-                        const cell = candle.priceLevels[price] || { bidVolume: 0, askVolume: 0 };
-                        const bid = cell.bidVolume;
-                        const ask = cell.askVolume;
-                        const total = bid + ask;
+                  return (
+                    <div key={candleIdx} className="flex flex-col gap-0 border-r border-gray-900">
+                      {/* Candlestick bar overlay */}
+                      <div className="relative h-24 w-16 mb-1 flex items-end justify-center">
+                        <div className="absolute inset-0 flex flex-col justify-between px-7">
+                          {sortedPrices.map(price => (
+                            <div key={price} className="h-px" />
+                          ))}
+                        </div>
                         
-                        // Color intensity based on volume
-                        const isAskDominant = ask > bid;
-                        const maxVol = Math.max(bid, ask);
-                        const intensity = total > 0 ? Math.min(maxVol / 100, 1) : 0;
-                        
-                        // Imbalance detection (3x ratio)
-                        const hasImbalance = (bid > 0 && ask > 0) && 
-                          (bid / ask >= 3 || ask / bid >= 3);
-                        
-                        const bgColor = total === 0 ? 'bg-gray-900' :
-                          isAskDominant 
-                            ? `rgba(34, 197, 94, ${0.2 + intensity * 0.5})` 
-                            : `rgba(239, 68, 68, ${0.2 + intensity * 0.5})`;
+                        {/* Wick and body */}
+                        <div className="relative w-full h-full flex flex-col items-center justify-end">
+                          <div 
+                            className={`absolute w-0.5 ${isGreen ? 'bg-green-500' : 'bg-red-500'}`}
+                            style={{
+                              bottom: `${((ohlc.low - minPrice) / (maxPrice - minPrice)) * 100}%`,
+                              height: `${((ohlc.high - ohlc.low) / (maxPrice - minPrice)) * 100}%`
+                            }}
+                          />
+                          <div 
+                            className={`absolute w-3 ${isGreen ? 'bg-green-600' : 'bg-red-600'}`}
+                            style={{
+                              bottom: `${((Math.min(ohlc.open, ohlc.close) - minPrice) / (maxPrice - minPrice)) * 100}%`,
+                              height: `${(Math.abs(ohlc.close - ohlc.open) / (maxPrice - minPrice)) * 100}%`
+                            }}
+                          />
+                        </div>
+                      </div>
 
-                        return (
-                          <div
-                            key={price}
-                            className={`h-7 w-20 flex items-center justify-center text-xs font-mono border border-gray-800 ${
-                              hasImbalance ? 'ring-2 ring-black' : ''
-                            }`}
-                            style={{ backgroundColor: bgColor }}
-                          >
-                            {total > 0 && (
-                              <span className="text-gray-200">
-                                {bid} × {ask}
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
+                      {/* Footprint cells */}
+                      <div className="flex flex-col-reverse gap-0">
+                        {sortedPrices.map(price => {
+                          const cell = candle.priceLevels[price] || { bidVolume: 0, askVolume: 0 };
+                          const bid = cell.bidVolume;
+                          const ask = cell.askVolume;
+                          const total = bid + ask;
+                          
+                          const isAskDominant = ask > bid;
+                          const maxVol = Math.max(bid, ask);
+                          const intensity = total > 0 ? Math.min(maxVol / 50, 1) : 0;
+                          
+                          const hasImbalance = (bid > 0 && ask > 0) && (bid / ask >= 3 || ask / bid >= 3);
+                          
+                          const bgColor = total === 0 ? '#0a0a0a' :
+                            isAskDominant 
+                              ? `rgba(22, 163, 74, ${0.15 + intensity * 0.4})` 
+                              : `rgba(220, 38, 38, ${0.15 + intensity * 0.4})`;
 
-                    {/* Cumulative Delta below candle */}
-                    <div className={`h-8 w-20 flex items-center justify-center text-sm font-bold border-t-2 border-gray-700 ${
-                      cumulativeDelta > 0 ? 'text-green-400 bg-green-950/30' : 'text-red-400 bg-red-950/30'
-                    }`}>
-                      {cumulativeDelta > 0 ? '+' : ''}{cumulativeDelta}
-                    </div>
+                          return (
+                            <div
+                              key={price}
+                              className={`h-6 w-16 flex items-center justify-center text-[9px] font-semibold border border-gray-900 ${
+                                hasImbalance ? 'ring-1 ring-inset ring-black' : ''
+                              }`}
+                              style={{ backgroundColor: bgColor }}
+                            >
+                              {total > 0 && (
+                                <span className={isAskDominant ? 'text-green-300' : 'text-red-300'}>
+                                  {bid} × {ask}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
 
-                    {/* Time label */}
-                    <div className="h-6 w-20 flex items-center justify-center text-xs text-gray-500 border-t border-gray-800">
-                      {new Date(candle.timeBucket).toLocaleTimeString('en-US', { 
-                        hour: '2-digit', 
-                        minute: '2-digit',
-                        hour12: false 
-                      })}
+                      {/* Delta below candle */}
+                      <div className={`h-7 w-16 flex items-center justify-center text-xs font-bold border-t border-gray-800 ${
+                        cumulativeDelta > 0 ? 'text-blue-400' : cumulativeDelta < 0 ? 'text-pink-400' : 'text-gray-500'
+                      }`}>
+                        {cumulativeDelta !== 0 && (cumulativeDelta > 0 ? '+' : '')}{cumulativeDelta}
+                      </div>
+
+                      {/* Cumulative Delta */}
+                      <div className={`h-7 w-16 flex items-center justify-center text-xs font-bold border-t border-gray-800 ${
+                        cumulativeDelta > 0 ? 'text-green-400 bg-green-950/20' : 'text-red-400 bg-red-950/20'
+                      }`}>
+                        {cumulativeDelta > 0 ? '+' : ''}{cumulativeDelta}
+                      </div>
+
+                      {/* Volume */}
+                      <div className="h-7 w-16 flex items-center justify-center text-[10px] text-gray-500 border-t border-gray-800">
+                        {totalVolume}
+                      </div>
+
+                      {/* Time */}
+                      <div className="h-6 w-16 flex items-center justify-center text-[9px] text-gray-600 border-t border-gray-900">
+                        {new Date(candle.timeBucket).toLocaleTimeString('en-US', { 
+                          hour: '2-digit', 
+                          minute: '2-digit',
+                          hour12: false 
+                        })}
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
         )}
