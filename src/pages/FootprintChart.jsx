@@ -62,123 +62,145 @@ export default function FootprintChart() {
   });
   const maxVol = Math.max(...Object.values(volProfile), 1);
 
-  const cellH = 20;
+  const cellH = 24;
+  const candleW = 80;
 
   return (
-    <div style={{ minHeight: "100vh", background: "#0a0a0f", color: "#e0e0e0", fontFamily: "monospace" }}>
-      <div style={{ borderBottom: "1px solid #1e1e2e", background: "#0f0f1a", padding: "12px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl("Terminal"))} style={{ color: "#666" }}>
-          <ArrowLeft size={16} />
+    <div style={{ minHeight: "100vh", background: "#131722", color: "#d1d4dc", fontFamily: "-apple-system, BlinkMacSystemFont, 'Trebuchet MS', Roboto, Ubuntu, sans-serif" }}>
+      <div style={{ borderBottom: "1px solid #2a2e39", background: "#1e222d", padding: "10px 16px", display: "flex", alignItems: "center", gap: 12 }}>
+        <Button variant="ghost" size="icon" onClick={() => navigate(createPageUrl("Terminal"))} style={{ color: "#787b86", background: "transparent", border: "none" }}>
+          <ArrowLeft size={18} />
         </Button>
-        <Activity size={18} color="#f59e0b" />
-        <span style={{ fontWeight: 500, fontSize: 15, fontFamily: "sans-serif" }}>NQM5 Footprint</span>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: status === "connected" ? "#22c55e" : status === "error" ? "#ef4444" : "#555" }} />
-          <span style={{ color: "#888" }}>{status}</span>
+        <span style={{ fontWeight: 500, fontSize: 14, color: "#d1d4dc", letterSpacing: "0.3px" }}>NQM5 · Footprint Chart</span>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, fontSize: 12 }}>
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: status === "connected" ? "#26a69a" : status === "error" ? "#ef5350" : "#787b86" }} />
+          <span style={{ color: "#787b86", textTransform: "uppercase", fontSize: 11, letterSpacing: "0.5px" }}>{status}</span>
         </div>
       </div>
 
       {status !== "connected" || buckets.length === 0 ? (
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 300, color: "#555", fontSize: 13, fontFamily: "sans-serif" }}>
-          {status === "connected" ? "Waiting for data..." : "Connecting to " + WS_URL + "..."}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 400, color: "#787b86", fontSize: 13 }}>
+          {status === "connected" ? "Waiting for market data..." : "Connecting..."}
         </div>
       ) : (
-        <div style={{ overflowX: "auto", overflowY: "auto", padding: 16 }}>
-          <div style={{ display: "flex", alignItems: "flex-start" }}>
+        <div style={{ overflowX: "auto", overflowY: "auto", padding: 0, background: "#131722" }}>
+          <div style={{ display: "flex", alignItems: "flex-start", minHeight: "calc(100vh - 50px)" }}>
 
             {/* Volume profile */}
-            <div style={{ display: "flex", flexDirection: "column", marginRight: 4 }}>
+            <div style={{ display: "flex", flexDirection: "column", background: "#1e222d", borderRight: "1px solid #2a2e39" }}>
               {prices.map(p => {
                 const v = volProfile[p] || 0;
-                const w = Math.round((v / maxVol) * 40);
+                const w = Math.round((v / maxVol) * 60);
                 return (
-                  <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
-                    <div style={{ height: 12, width: w, background: "#1d4e89", borderRadius: 1 }} />
+                  <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end", paddingRight: 4 }}>
+                    <div style={{ height: 16, width: w, background: "#2962ff", opacity: 0.3 }} />
                   </div>
                 );
               })}
             </div>
 
             {/* Price axis */}
-            <div style={{ display: "flex", flexDirection: "column", marginRight: 8, minWidth: 60 }}>
+            <div style={{ display: "flex", flexDirection: "column", background: "#1e222d", borderRight: "1px solid #2a2e39", minWidth: 70 }}>
               {prices.map(p => (
-                <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end", fontSize: 10, color: "#666", paddingRight: 4 }}>
+                <div key={p} style={{ height: cellH, display: "flex", alignItems: "center", justifyContent: "flex-end", fontSize: 11, color: "#787b86", paddingRight: 8, fontWeight: 500 }}>
                   {p.toFixed(2)}
                 </div>
               ))}
             </div>
 
             {/* Candle columns */}
-            {buckets.map(bucket => {
-              const bar = ohlc[bucket] || {};
-              const isGreen = bar.c >= bar.o;
-              const bodyTop = maxP - Math.max(bar.o, bar.c);
-              const bodyH = Math.abs(bar.c - bar.o);
-              const wickTop = maxP - bar.h;
-              const wickH = bar.h - bar.l;
-              const delta = Object.values(candles[bucket] || {}).reduce((s, v) => s + (v.a - v.b), 0);
-              const totalVol = Object.values(candles[bucket] || {}).reduce((s, v) => s + v.a + v.b, 0);
+            <div style={{ display: "flex", background: "#131722" }}>
+              {buckets.map(bucket => {
+                const bar = ohlc[bucket] || {};
+                const isGreen = bar.c >= bar.o;
+                const bodyTop = maxP - Math.max(bar.o, bar.c);
+                const bodyH = Math.abs(bar.c - bar.o);
+                const wickTop = maxP - bar.h;
+                const wickH = bar.h - bar.l;
+                const delta = Object.values(candles[bucket] || {}).reduce((s, v) => s + (v.a - v.b), 0);
+                const totalVol = Object.values(candles[bucket] || {}).reduce((s, v) => s + v.a + v.b, 0);
 
-              return (
-                <div key={bucket} style={{ display: "flex", flexDirection: "column", marginRight: 2 }}>
+                return (
+                  <div key={bucket} style={{ display: "flex", flexDirection: "column", borderRight: "1px solid #2a2e39" }}>
 
-                  {/* Candlestick */}
-                  <div style={{ position: "relative", width: 56, height: prices.length * cellH * 0.3, marginBottom: 4, minHeight: 60 }}>
-                    <div style={{
-                      position: "absolute", left: "50%", transform: "translateX(-50%)",
-                      top: `${(wickTop / range) * 100}%`,
-                      height: `${(wickH / range) * 100}%`,
-                      width: 1, background: isGreen ? "#22c55e" : "#ef4444", minHeight: 2
-                    }} />
-                    <div style={{
-                      position: "absolute", left: "50%", transform: "translateX(-50%)",
-                      top: `${(bodyTop / range) * 100}%`,
-                      height: `${Math.max((bodyH / range) * 100, 1)}%`,
-                      width: 10, background: isGreen ? "#16a34a" : "#dc2626", borderRadius: 1
-                    }} />
+                    {/* Candlestick */}
+                    <div style={{ position: "relative", width: candleW, height: prices.length * cellH * 0.25, minHeight: 80, background: "#1e222d", borderBottom: "1px solid #2a2e39" }}>
+                      <div style={{
+                        position: "absolute", left: "50%", transform: "translateX(-50%)",
+                        top: `${(wickTop / range) * 100}%`,
+                        height: `${(wickH / range) * 100}%`,
+                        width: 1, background: isGreen ? "#089981" : "#f23645"
+                      }} />
+                      <div style={{
+                        position: "absolute", left: "50%", transform: "translateX(-50%)",
+                        top: `${(bodyTop / range) * 100}%`,
+                        height: `${Math.max((bodyH / range) * 100, 2)}%`,
+                        width: 16, background: isGreen ? "#089981" : "#f23645", border: isGreen ? "1px solid #089981" : "1px solid #f23645"
+                      }} />
+                    </div>
+
+                    {/* Footprint cells */}
+                    {prices.map(p => {
+                      const cell = (candles[bucket] || {})[p] || { b: 0, a: 0 };
+                      const total = cell.b + cell.a;
+                      const askDom = cell.a > cell.b;
+                      const imbalance = total > 0 && ((cell.b > 0 ? cell.a / cell.b >= 3 : false) || (cell.a > 0 ? cell.b / cell.a >= 3 : false));
+                      const intensity = total > 0 ? Math.min((Math.max(cell.b, cell.a) / 150), 1) : 0;
+                      const bg = total === 0 ? "#131722" :
+                        askDom ? `rgba(8,153,129,${0.1 + intensity * 0.5})` : `rgba(242,54,69,${0.1 + intensity * 0.5})`;
+
+                      return (
+                        <div key={p} style={{
+                          height: cellH, width: candleW,
+                          background: bg,
+                          borderBottom: "1px solid #2a2e39",
+                          borderRight: imbalance ? "2px solid #ffffff" : "none",
+                          borderLeft: imbalance ? "2px solid #ffffff" : "none",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          fontSize: 10, fontWeight: 600, fontFamily: "monospace",
+                          color: total === 0 ? "transparent" : askDom ? "#089981" : "#f23645"
+                        }}>
+                          {total > 0 ? `${cell.b} × ${cell.a}` : ""}
+                        </div>
+                      );
+                    })}
+
+                    {/* Delta row */}
+                    <div style={{ 
+                      height: 26, width: candleW, 
+                      display: "flex", alignItems: "center", justifyContent: "center", 
+                      fontSize: 11, fontWeight: 700, 
+                      borderBottom: "1px solid #2a2e39",
+                      background: delta > 0 ? "rgba(8,153,129,0.1)" : delta < 0 ? "rgba(242,54,69,0.1)" : "#1e222d",
+                      color: delta > 0 ? "#089981" : delta < 0 ? "#f23645" : "#787b86"
+                    }}>
+                      {delta > 0 ? "+" : ""}{delta}
+                    </div>
+
+                    {/* Volume row */}
+                    <div style={{ 
+                      height: 24, width: candleW, 
+                      display: "flex", alignItems: "center", justifyContent: "center", 
+                      fontSize: 10, color: "#787b86", 
+                      borderBottom: "1px solid #2a2e39",
+                      background: "#1e222d"
+                    }}>
+                      {totalVol}
+                    </div>
+
+                    {/* Time label */}
+                    <div style={{ 
+                      height: 22, width: candleW, 
+                      display: "flex", alignItems: "center", justifyContent: "center", 
+                      fontSize: 10, color: "#787b86",
+                      background: "#1e222d"
+                    }}>
+                      {bucket.slice(11, 16)}
+                    </div>
                   </div>
-
-                  {/* Footprint cells */}
-                  {prices.map(p => {
-                    const cell = (candles[bucket] || {})[p] || { b: 0, a: 0 };
-                    const total = cell.b + cell.a;
-                    const askDom = cell.a >= cell.b;
-                    const imbalance = total > 0 && ((cell.b > 0 ? cell.a / cell.b >= 3 : false) || (cell.a > 0 ? cell.b / cell.a >= 3 : false));
-                    const intensity = total > 0 ? Math.min((Math.max(cell.b, cell.a) / 200), 1) : 0;
-                    const bg = total === 0 ? "#0d0d14" :
-                      askDom ? `rgba(22,163,74,${0.12 + intensity * 0.45})` : `rgba(220,38,38,${0.12 + intensity * 0.45})`;
-
-                    return (
-                      <div key={p} style={{
-                        height: cellH, width: 56,
-                        background: bg,
-                        border: imbalance ? "1px solid #fff" : "1px solid #1a1a2e",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        fontSize: 9, fontWeight: 600,
-                        color: total === 0 ? "transparent" : askDom ? "#86efac" : "#fca5a5"
-                      }}>
-                        {total > 0 ? `${cell.b} × ${cell.a}` : ""}
-                      </div>
-                    );
-                  })}
-
-                  {/* Delta row */}
-                  <div style={{ height: 20, width: 56, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 700, borderTop: "1px solid #1e1e2e", color: delta >= 0 ? "#60a5fa" : "#f472b6" }}>
-                    {delta > 0 ? "+" : ""}{delta}
-                  </div>
-
-                  {/* Volume row */}
-                  <div style={{ height: 18, width: 56, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#555", borderTop: "1px solid #111" }}>
-                    {totalVol}
-                  </div>
-
-                  {/* Time label */}
-                  <div style={{ height: 18, width: 56, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, color: "#444", borderTop: "1px solid #111" }}>
-                    {bucket.slice(11, 16)}
-                  </div>
-                </div>
-              );
-            })}
+                );
+              })}
+            </div>
           </div>
         </div>
       )}
