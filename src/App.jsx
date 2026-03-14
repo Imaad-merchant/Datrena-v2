@@ -29,50 +29,41 @@ const AuthenticatedApp = () => {
     );
   }
 
-  // Handle authentication errors - show landing for non-authenticated users
-  if (authError) {
-    if (authError.type === 'user_not_registered') {
-      return <UserNotRegisteredError />;
-    } else if (authError.type === 'auth_required') {
-      return (
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/Home" element={<Landing />} />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-      );
-    }
-  }
-
-  // If user is authenticated, show main app
-  if (user) {
-    return (
-      <Routes>
-        <Route path="/" element={<Navigate to="/QuantHome" replace />} />
-        <Route path="/Home" element={<Navigate to="/QuantHome" replace />} />
-        <Route path="/QuantHome" element={<QuantHome />} />
-        {Object.entries(Pages).map(([path, Page]) => (
-          <Route
-            key={path}
-            path={`/${path}`}
-            element={
-              <LayoutWrapper currentPageName={path}>
-                <Page />
-              </LayoutWrapper>
-            }
-          />
-        ))}
-        <Route path="*" element={<PageNotFound />} />
-      </Routes>
-    );
-  }
-
-  // Default to landing page
+  // Everyone sees landing page and authenticated routes
   return (
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/Home" element={<Landing />} />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      
+      {/* Authenticated routes */}
+      {user ? (
+        <>
+          <Route path="/QuantHome" element={<QuantHome />} />
+          {Object.entries(Pages).map(([path, Page]) => (
+            <Route
+              key={path}
+              path={`/${path}`}
+              element={
+                <LayoutWrapper currentPageName={path}>
+                  <Page />
+                </LayoutWrapper>
+              }
+            />
+          ))}
+        </>
+      ) : (
+        <>
+          <Route path="/QuantHome" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </>
+      )}
+      
+      {/* Handle user not registered error */}
+      {authError?.type === 'user_not_registered' && (
+        <Route path="*" element={<UserNotRegisteredError />} />
+      )}
+      
+      <Route path="*" element={user ? <PageNotFound /> : <Navigate to="/" replace />} />
     </Routes>
   );
 };
