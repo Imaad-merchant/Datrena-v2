@@ -2,21 +2,13 @@ import React from "react";
 import { TrendingUp, TrendingDown, Target, DollarSign, Percent, BarChart3 } from "lucide-react";
 
 export default function PerformanceStats({ trades }) {
-  if (!trades || trades.length === 0) {
-    return (
-      <div className="text-center py-12 text-gray-500">
-        <p>No trades yet. Connect your prop firm to see performance statistics.</p>
-      </div>
-    );
-  }
-
-  const winningTrades = trades.filter(t => t.pnl > 0);
-  const losingTrades = trades.filter(t => t.pnl < 0);
+  const winningTrades = (trades || []).filter(t => t.pnl > 0);
+  const losingTrades = (trades || []).filter(t => t.pnl < 0);
   
-  const totalTrades = trades.length;
-  const winRate = ((winningTrades.length / totalTrades) * 100).toFixed(1);
+  const totalTrades = (trades || []).length;
+  const winRate = totalTrades > 0 ? ((winningTrades.length / totalTrades) * 100).toFixed(1) : "0.0";
   
-  const totalPnL = trades.reduce((sum, t) => sum + t.pnl, 0);
+  const totalPnL = (trades || []).reduce((sum, t) => sum + t.pnl, 0);
   const avgWin = winningTrades.length > 0 
     ? winningTrades.reduce((sum, t) => sum + t.pnl, 0) / winningTrades.length 
     : 0;
@@ -31,7 +23,7 @@ export default function PerformanceStats({ trades }) {
     ? Math.min(...losingTrades.map(t => t.pnl)) 
     : 0;
   
-  const riskRewardRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : 0;
+  const riskRewardRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : "N/A";
 
   const stats = [
     {
