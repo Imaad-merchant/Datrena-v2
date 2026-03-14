@@ -1,105 +1,85 @@
 import React from "react";
-import { TrendingUp, TrendingDown, Target, DollarSign, Percent, BarChart3 } from "lucide-react";
 
 export default function PerformanceStats({ trades }) {
   const winningTrades = (trades || []).filter(t => t.pnl > 0);
   const losingTrades = (trades || []).filter(t => t.pnl < 0);
   
   const totalTrades = (trades || []).length;
-  const winRate = totalTrades > 0 ? ((winningTrades.length / totalTrades) * 100).toFixed(1) : "0.0";
+  const winRate = totalTrades > 0 ? ((winningTrades.length / totalTrades) * 100).toFixed(1) : 0;
   
   const totalPnL = (trades || []).reduce((sum, t) => sum + t.pnl, 0);
   const avgWin = winningTrades.length > 0 
     ? winningTrades.reduce((sum, t) => sum + t.pnl, 0) / winningTrades.length 
     : 0;
   const avgLoss = losingTrades.length > 0 
-    ? losingTrades.reduce((sum, t) => sum + t.pnl, 0) / losingTrades.length 
+    ? Math.abs(losingTrades.reduce((sum, t) => sum + t.pnl, 0) / losingTrades.length)
     : 0;
   
   const largestWin = winningTrades.length > 0 
     ? Math.max(...winningTrades.map(t => t.pnl)) 
     : 0;
   const largestLoss = losingTrades.length > 0 
-    ? Math.min(...losingTrades.map(t => t.pnl)) 
+    ? Math.abs(Math.min(...losingTrades.map(t => t.pnl)))
     : 0;
   
-  const riskRewardRatio = avgLoss !== 0 ? (avgWin / Math.abs(avgLoss)).toFixed(2) : "N/A";
+  const riskRewardRatio = avgLoss !== 0 ? (avgWin / avgLoss).toFixed(2) : 0;
+
+  const maxValue = Math.max(avgWin, avgLoss, largestWin, largestLoss, 1);
 
   const stats = [
-    {
-      label: "Total Trades",
-      value: totalTrades,
-      icon: BarChart3,
-      color: "text-blue-400",
-      bg: "bg-blue-500/10"
-    },
-    {
-      label: "Win Rate",
-      value: `${winRate}%`,
-      icon: Target,
-      color: "text-green-400",
-      bg: "bg-green-500/10"
-    },
-    {
-      label: "Total P&L",
-      value: `$${totalPnL.toFixed(2)}`,
-      icon: DollarSign,
-      color: totalPnL >= 0 ? "text-green-400" : "text-red-400",
-      bg: totalPnL >= 0 ? "bg-green-500/10" : "bg-red-500/10"
-    },
-    {
-      label: "Risk/Reward",
-      value: riskRewardRatio,
-      icon: Percent,
-      color: "text-purple-400",
-      bg: "bg-purple-500/10"
-    },
-    {
-      label: "Avg Win",
-      value: `$${avgWin.toFixed(2)}`,
-      icon: TrendingUp,
-      color: "text-green-400",
-      bg: "bg-green-500/10"
-    },
-    {
-      label: "Avg Loss",
-      value: `$${avgLoss.toFixed(2)}`,
-      icon: TrendingDown,
-      color: "text-red-400",
-      bg: "bg-red-500/10"
-    },
-    {
-      label: "Largest Win",
-      value: `$${largestWin.toFixed(2)}`,
-      icon: TrendingUp,
-      color: "text-green-400",
-      bg: "bg-green-500/10"
-    },
-    {
-      label: "Largest Loss",
-      value: `$${largestLoss.toFixed(2)}`,
-      icon: TrendingDown,
-      color: "text-red-400",
-      bg: "bg-red-500/10"
-    }
+    { label: "Total Trades", value: totalTrades, type: "number" },
+    { label: "Win Rate", value: winRate, suffix: "%", type: "number" },
+    { label: "Total P&L", value: totalPnL, prefix: "$", type: "number", color: totalPnL >= 0 ? "green" : "red" },
+    { label: "Risk/Reward Ratio", value: riskRewardRatio, type: "number" },
+    { label: "Avg Win", value: avgWin, prefix: "$", barWidth: (avgWin / maxValue) * 100, color: "green" },
+    { label: "Avg Loss", value: avgLoss, prefix: "$", barWidth: (avgLoss / maxValue) * 100, color: "red" },
+    { label: "Largest Win", value: largestWin, prefix: "$", barWidth: (largestWin / maxValue) * 100, color: "blue" },
+    { label: "Largest Loss", value: largestLoss, prefix: "$", barWidth: (largestLoss / maxValue) * 100, color: "orange" }
   ];
 
   return (
-    <div className="grid md:grid-cols-4 gap-4">
-      {stats.map((stat, i) => {
-        const Icon = stat.icon;
-        return (
-          <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-3">
-              <div className={`w-10 h-10 ${stat.bg} rounded-lg flex items-center justify-center`}>
-                <Icon className={`w-5 h-5 ${stat.color}`} />
+    <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+      <div className="space-y-4">
+        {stats.map((stat, i) => (
+          <div key={i} className="flex items-center gap-4">
+            <div className="w-48 text-sm text-gray-400 font-medium">{stat.label}</div>
+            
+            {stat.type === "number" && (
+              <div className={`text-lg font-bold ${
+                stat.color === "green" ? "text-green-400" : 
+                stat.color === "red" ? "text-red-400" : 
+                "text-gray-200"
+              }`}>
+                {stat.prefix || ""}{typeof stat.value === "number" ? stat.value.toFixed(2) : stat.value}{stat.suffix || ""}
               </div>
-              <p className="text-sm text-gray-400">{stat.label}</p>
-            </div>
-            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
+            )}
+
+            {stat.barWidth !== undefined && (
+              <div className="flex-1 flex items-center gap-3">
+                <div className="flex-1 bg-gray-800 rounded-full h-8 overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-500 ${
+                      stat.color === "green" ? "bg-green-500" :
+                      stat.color === "red" ? "bg-red-500" :
+                      stat.color === "blue" ? "bg-blue-500" :
+                      "bg-orange-500"
+                    }`}
+                    style={{ width: `${stat.barWidth}%` }}
+                  />
+                </div>
+                <div className={`text-sm font-bold w-24 text-right ${
+                  stat.color === "green" ? "text-green-400" :
+                  stat.color === "red" ? "text-red-400" :
+                  stat.color === "blue" ? "text-blue-400" :
+                  "text-orange-400"
+                }`}>
+                  {stat.prefix || ""}{stat.value.toFixed(2)}
+                </div>
+              </div>
+            )}
           </div>
-        );
-      })}
+        ))}
+      </div>
     </div>
   );
 }
