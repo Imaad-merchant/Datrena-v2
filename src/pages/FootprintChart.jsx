@@ -257,7 +257,7 @@ export default function FootprintChart() {
       </div>
 
       {/* TradingView Candlestick Chart */}
-      <div ref={chartRef} style={{ width: "100%", height: "calc(25vh - 25px)", borderBottom: "1px solid #1e1e2e" }} className="rounded" />
+      <div ref={chartRef} style={{ width: "100%", height: "calc(75vh - 50px)", borderBottom: "1px solid #1e1e2e" }} className="rounded" />
 
       {/* Footprint Grid */}
       {buckets.length === 0 ?
@@ -265,7 +265,7 @@ export default function FootprintChart() {
           {loadingHistory ? "Loading historical data..." : "Waiting for data..."}
         </div> :
 
-      <div style={{ overflowX: "auto", overflowY: "auto", height: "calc(75vh - 75px)", padding: "10px 8px" }}>
+      <div style={{ overflowX: "auto", overflowY: "auto", height: "calc(25vh - 50px)", padding: "10px 8px" }}>
           <div style={{ display: "flex", alignItems: "flex-start" }}>
 
             {/* Volume Profile */}
