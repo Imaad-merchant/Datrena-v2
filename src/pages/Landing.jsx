@@ -102,42 +102,12 @@ export default function Landing() {
                   </div>
                 </div>
                 {/* Chart area */}
-                <div className="bg-black p-2 h-64 relative overflow-hidden">
-                  {/* Simulated footprint/candlestick chart */}
-                  <div className="absolute inset-0 flex items-end justify-around px-2 pb-2 gap-0.5">
-                    {[
-                      { h: 60, up: false }, { h: 80, up: true }, { h: 55, up: false },
-                      { h: 90, up: true }, { h: 70, up: false }, { h: 100, up: true },
-                      { h: 85, up: false }, { h: 110, up: true }, { h: 75, up: false },
-                      { h: 95, up: true }, { h: 65, up: false }, { h: 120, up: true },
-                      { h: 88, up: false }, { h: 78, up: true }, { h: 50, up: false },
-                      { h: 92, up: true }, { h: 68, up: false }, { h: 105, up: true },
-                      { h: 82, up: false }, { h: 115, up: true },
-                    ].map((bar, i) => (
-                      <div
-                        key={i}
-                        className="flex-1 rounded-sm"
-                        style={{
-                          height: bar.h,
-                          backgroundColor: bar.up ? "#22c55e" : "#ef4444",
-                          opacity: 0.85,
-                          minWidth: 10,
-                        }}
-                      />
-                    ))}
-                  </div>
-                  {/* Yellow horizontal line */}
-                  <div className="absolute left-0 right-0" style={{ top: "30%", height: 2, backgroundColor: "#ca8a04", opacity: 0.8 }} />
-                  {/* White line overlay */}
-                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 480 256" preserveAspectRatio="none">
-                    <polyline
-                      points="0,180 60,160 120,170 180,140 240,150 300,120 360,130 420,100 480,110"
-                      fill="none"
-                      stroke="white"
-                      strokeWidth="1.5"
-                      opacity="0.6"
-                    />
-                  </svg>
+                <div className="bg-black h-64 relative overflow-hidden">
+                  <img 
+                    src="https://media.base44.com/images/public/69a877fa3c3927b616239696/327a4bed5_Screenshot2026-03-19at54802PM.png"
+                    alt="Datrena Terminal"
+                    className="w-full h-full object-cover object-top"
+                  />
                 </div>
                 {/* Bottom bar */}
                 <div className="bg-gray-900 px-4 py-1 border-t border-gray-700 flex gap-4">
