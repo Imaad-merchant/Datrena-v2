@@ -113,7 +113,7 @@ export default function Landing() {
               style={{ width: 560 }}
             />
             {/* Cover the sparkle star in bottom-right of image */}
-            <div className="absolute bg-black" style={{ width: 50, height: 50, bottom: 10, right: 10 }} />
+            <div className="absolute bg-black" style={{ width: 48, height: 48, bottom: 52, right: 6 }} />
           </div>
         </div>
 
