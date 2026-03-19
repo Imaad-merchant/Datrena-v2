@@ -41,7 +41,7 @@ export default function Landing() {
             <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center">
               <div className="w-4 h-4 border-2 border-white rounded-full" />
             </div>
-            <span className="text-xl font-bold text-gray-900">QUANTCONNECT</span>
+            <span className="text-xl font-bold text-gray-900">DATRENA</span>
           </div>
           
           <nav className="hidden md:flex items-center gap-8 text-sm text-gray-600">
@@ -171,7 +171,7 @@ export default function Landing() {
       <footer className="border-t border-gray-200 bg-gray-50 mt-20">
         <div className="max-w-7xl mx-auto px-6 py-8">
           <div className="text-center text-sm text-gray-500">
-            © 2026 QuantConnect. All rights reserved.
+            © 2026 Datrena. All rights reserved.
           </div>
         </div>
       </footer>

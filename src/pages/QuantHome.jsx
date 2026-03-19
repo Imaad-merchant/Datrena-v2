@@ -60,7 +60,7 @@ export default function QuantHome() {
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-3 mb-4">
               <Activity className="w-10 h-10 text-yellow-400" />
-              <h1 className="text-5xl font-bold text-white">Quantitative Analyzer</h1>
+              <h1 className="text-5xl font-bold text-white">Datrena</h1>
             </div>
             <p className="text-xl text-gray-400 max-w-3xl mx-auto">
               Professional-grade quantitative trading platform organized into four integrated layers
