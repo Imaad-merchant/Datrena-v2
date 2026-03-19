@@ -21,21 +21,24 @@ export default function Landing() {
 
     ctx.clearRect(0, 0, W, H);
 
-    // Generate mountain-like wave points
+    // Generate spiky volume-like points growing upward from bottom
     const points = [];
-    const segments = 120;
+    const segments = 200;
     for (let i = 0; i <= segments; i++) {
       const x = (i / segments) * W;
+      // Combine multiple frequencies for irregular spiky shape
       const noise =
-        Math.sin(i * 0.18) * 40 +
-        Math.sin(i * 0.07) * 60 +
-        Math.sin(i * 0.34) * 20 +
-        Math.sin(i * 0.55) * 15;
-      const y = H * 0.55 - noise;
+        Math.abs(Math.sin(i * 0.3)) * 50 +
+        Math.abs(Math.sin(i * 0.7 + 1)) * 30 +
+        Math.abs(Math.sin(i * 1.5 + 2)) * 20 +
+        Math.abs(Math.sin(i * 0.15)) * 40 +
+        Math.abs(Math.sin(i * 2.3 + 0.5)) * 15;
+      // y from bottom
+      const y = H - noise * 0.75;
       points.push({ x, y });
     }
 
-    // Fill area below the wave
+    // Fill area (upward from baseline)
     ctx.beginPath();
     ctx.moveTo(0, H);
     ctx.lineTo(points[0].x, points[0].y);
@@ -46,8 +49,9 @@ export default function Landing() {
     ctx.closePath();
 
     const gradient = ctx.createLinearGradient(0, 0, 0, H);
-    gradient.addColorStop(0, "rgba(200,200,200,0.9)");
-    gradient.addColorStop(1, "rgba(80,80,80,0.6)");
+    gradient.addColorStop(0, "rgba(255,255,255,0.95)");
+    gradient.addColorStop(0.4, "rgba(200,200,200,0.85)");
+    gradient.addColorStop(1, "rgba(100,100,100,0.6)");
     ctx.fillStyle = gradient;
     ctx.fill();
   }, []);
