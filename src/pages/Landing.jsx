@@ -87,21 +87,20 @@ export default function Landing() {
             </p>
           </div>
 
-          {/* Right — Chart mockup */}
+          {/* Right — Chart image */}
           <div className="flex justify-center lg:justify-end">
-          <div style={{ transform: "perspective(1000px) rotateY(-8deg) rotateX(3deg)" }}>
-            <img
-              src="https://media.base44.com/images/public/69a877fa3c3927b616239696/b685c0b06_image.png"
-              alt="Datrena Terminal"
-              className="rounded-xl shadow-2xl"
-              style={{ width: 520 }}
-            />
+            <div style={{ transform: "perspective(1000px) rotateY(-8deg) rotateX(3deg)" }}>
+              <img
+                src="https://media.base44.com/images/public/69a877fa3c3927b616239696/b685c0b06_image.png"
+                alt="Datrena Terminal"
+                className="rounded-xl shadow-2xl"
+                style={{ width: 520 }}
+              />
+            </div>
           </div>
-          </div>
-          </div>
-          </div>
+        </div>
 
-          {/* Wave silhouette */}
+        {/* Wave silhouette */}
         <div className="absolute bottom-0 left-0 right-0">
           <canvas ref={canvasRef} width={1400} height={180} className="w-full" />
         </div>
