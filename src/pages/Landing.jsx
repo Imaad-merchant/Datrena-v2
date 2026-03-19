@@ -105,15 +105,13 @@ export default function Landing() {
           </div>
 
           {/* Right — monitor image */}
-          <div className="flex-shrink-0 -mt-2 mr-4 relative">
+          <div className="flex-shrink-0 -mt-2 mr-4">
             <img
-              src="https://media.base44.com/images/public/69a877fa3c3927b616239696/b685c0b06_image.png"
+              src="https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png"
               alt="Datrena Terminal"
               className="rounded-xl shadow-2xl"
               style={{ width: 560 }}
             />
-            {/* Cover the sparkle star in bottom-right of image */}
-            <div className="absolute bg-black" style={{ width: 48, height: 48, bottom: 52, right: 6 }} />
           </div>
         </div>
 
