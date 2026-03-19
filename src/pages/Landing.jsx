@@ -89,41 +89,19 @@ export default function Landing() {
 
           {/* Right — Chart mockup */}
           <div className="flex justify-center lg:justify-end">
-            <div className="relative" style={{ transform: "perspective(1000px) rotateY(-8deg) rotateX(3deg)" }}>
-              {/* Monitor */}
-              <div className="bg-gray-900 rounded-xl shadow-2xl overflow-hidden border border-gray-700" style={{ width: 480 }}>
-                {/* Title bar */}
-                <div className="bg-gray-800 px-4 py-2 flex items-center gap-2 border-b border-gray-700">
-                  <div className="w-3 h-3 rounded-full bg-red-500" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                  <div className="w-3 h-3 rounded-full bg-green-500" />
-                  <div className="flex-1 mx-4 bg-gray-700 rounded h-4 text-xs text-gray-400 flex items-center px-2 truncate">
-                    datrena.app / terminal
-                  </div>
-                </div>
-                {/* Chart area */}
-                <div className="bg-black h-64 relative overflow-hidden">
-                  <img 
-                    src="https://media.base44.com/images/public/69a877fa3c3927b616239696/327a4bed5_Screenshot2026-03-19at54802PM.png"
-                    alt="Datrena Terminal"
-                    className="w-full h-full object-cover object-top"
-                  />
-                </div>
-                {/* Bottom bar */}
-                <div className="bg-gray-900 px-4 py-1 border-t border-gray-700 flex gap-4">
-                  <div className="h-3 w-16 bg-blue-500 rounded-full opacity-80" />
-                  <div className="h-3 w-24 bg-gray-700 rounded-full" />
-                  <div className="h-3 w-12 bg-gray-700 rounded-full" />
-                </div>
-              </div>
-              {/* Stand */}
-              <div className="mx-auto w-20 h-3 bg-gray-600 rounded-b-sm" />
-              <div className="mx-auto w-32 h-1.5 bg-gray-700 rounded-sm" />
-            </div>
+          <div style={{ transform: "perspective(1000px) rotateY(-8deg) rotateX(3deg)" }}>
+            <img
+              src="https://media.base44.com/images/public/69a877fa3c3927b616239696/b685c0b06_image.png"
+              alt="Datrena Terminal"
+              className="rounded-xl shadow-2xl"
+              style={{ width: 520 }}
+            />
           </div>
-        </div>
+          </div>
+          </div>
+          </div>
 
-        {/* Wave silhouette */}
+          {/* Wave silhouette */}
         <div className="absolute bottom-0 left-0 right-0">
           <canvas ref={canvasRef} width={1400} height={180} className="w-full" />
         </div>
