@@ -1,4 +1,5 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState } from "react";
+import TradersSection from "../components/landing/TradersSection";
 import { useNavigate } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Activity } from "lucide-react";
@@ -128,6 +129,9 @@ export default function Landing() {
           </div>
         </div>
       </div>
+
+      {/* Traders section */}
+      <TradersSection onSignIn={handleSignIn} />
     </div>
   );
 }
