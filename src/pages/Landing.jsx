@@ -1,75 +1,15 @@
 import React, { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { Activity } from "lucide-react";
 
 export default function Landing() {
-  const canvasRef = useRef(null);
-
   const handleSignIn = () => {
-    base44.auth.redirectToLogin(createPageUrl("QuantHome"));
+    base44.auth.redirectToLogin("/QuantHome");
   };
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    const W = canvas.width;
-    const H = canvas.height;
-
-    ctx.clearRect(0, 0, W, H);
-
-    // Generate volume-like spiky waveform growing UP from bottom
-    const points = [];
-    const segments = 300;
-
-    // Seed a deterministic volume profile with clusters of activity
-    for (let i = 0; i <= segments; i++) {
-      const t = i / segments;
-      // Multiple overlapping sine waves for organic volume shape
-      const base =
-        Math.pow(Math.abs(Math.sin(i * 0.08)), 0.5) * 80 +
-        Math.pow(Math.abs(Math.sin(i * 0.22 + 1.2)), 0.6) * 60 +
-        Math.abs(Math.sin(i * 0.55 + 0.4)) * 35 +
-        Math.abs(Math.sin(i * 1.1 + 2.1)) * 25 +
-        Math.abs(Math.sin(i * 2.4 + 0.8)) * 15 +
-        Math.abs(Math.sin(i * 4.2 + 1.5)) * 10;
-
-      // Add a few big volume spikes
-      let spike = 0;
-      if (i > 10 && i < 18) spike = 60 * Math.sin(((i - 10) / 8) * Math.PI);
-      if (i > 55 && i < 68) spike = 80 * Math.sin(((i - 55) / 13) * Math.PI);
-      if (i > 120 && i < 135) spike = 70 * Math.sin(((i - 120) / 15) * Math.PI);
-      if (i > 195 && i < 210) spike = 90 * Math.sin(((i - 195) / 15) * Math.PI);
-      if (i > 260 && i < 275) spike = 75 * Math.sin(((i - 260) / 15) * Math.PI);
-
-      const height = base + spike;
-      const y = H - Math.max(height, 4);
-      points.push({ x: (i / segments) * W, y });
-    }
-
-    // Draw filled area
-    ctx.beginPath();
-    ctx.moveTo(0, H);
-    ctx.lineTo(points[0].x, points[0].y);
-    for (let i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i].x, points[i].y);
-    }
-    ctx.lineTo(W, H);
-    ctx.closePath();
-
-    const gradient = ctx.createLinearGradient(0, 0, 0, H);
-    gradient.addColorStop(0, "rgba(255,255,255,1)");
-    gradient.addColorStop(0.25, "rgba(220,220,220,0.95)");
-    gradient.addColorStop(0.6, "rgba(130,130,130,0.85)");
-    gradient.addColorStop(1, "rgba(40,40,40,0.7)");
-    ctx.fillStyle = gradient;
-    ctx.fill();
-  }, []);
-
   return (
-    <div className="min-h-screen bg-black flex flex-col overflow-hidden">
+    <div className="min-h-screen bg-black flex flex-col text-white">
       {/* Navbar */}
       <nav className="flex items-center justify-between px-10 py-5 z-10 relative">
         <div className="flex items-center gap-2">
@@ -90,38 +30,103 @@ export default function Landing() {
       </nav>
 
       {/* Hero */}
-      <div className="flex-1 relative flex flex-col">
-        {/* Content row */}
-        <div className="flex items-start justify-between px-10 pt-10 pb-4 z-10 relative">
-          {/* Left text */}
-          <div className="max-w-sm mt-6">
-            <h1 className="text-4xl font-extrabold text-white leading-tight mb-4">
-              Quantitative Research<br />Meets Analytics
-            </h1>
-            <p className="text-gray-400 text-sm leading-relaxed">
-              A Professional Quantitative Trading Platform<br />
-              for Orderflow, Strategy Research, and Backtesting.
-            </p>
-          </div>
-
-          {/* Right — monitor image */}
-          <div className="flex-shrink-0 -mt-2 mr-4">
-            <img
-              src="https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png"
-              alt="Datrena Terminal"
-              className="rounded-xl shadow-2xl"
-              style={{ width: 560 }}
-            />
-          </div>
+      <div className="flex items-start justify-between px-10 pt-10 pb-16">
+        {/* Left */}
+        <div className="max-w-md mt-4">
+          <h1 className="text-5xl font-extrabold text-white leading-tight mb-6">
+            Quantitative Research<br />Meets Analytics
+          </h1>
+          <p className="text-gray-400 text-sm mb-3">
+            A Professional Software Offering Distinctions that redefine with Meaning
+          </p>
+          <ul className="text-gray-400 text-sm space-y-1 mb-8">
+            <li>- Order Flow Analysis</li>
+            <li>- Advanced Backtesting</li>
+            <li>- Statistical Distributions</li>
+            <li>- Prop Firm Rating</li>
+          </ul>
+          <button
+            onClick={handleSignIn}
+            className="bg-white text-black font-semibold px-6 py-3 rounded-full hover:bg-gray-200 transition-colors text-sm flex items-center gap-2"
+          >
+            Start for Free →
+          </button>
         </div>
 
-        {/* Volume wave — positioned at bottom, tall */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <canvas ref={canvasRef} width={1600} height={240} className="w-full block" />
+        {/* Right — terminal screenshot */}
+        <div className="flex-shrink-0 mt-2">
+          <img
+            src="https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png"
+            alt="Datrena Terminal"
+            className="rounded-xl shadow-2xl"
+            style={{ width: 520 }}
+          />
         </div>
+      </div>
 
-        {/* Spacer to push content above wave */}
-        <div style={{ height: 200 }} />
+      {/* Layers section */}
+      <div className="px-10 pb-16">
+        <p className="text-center text-gray-300 text-base mb-8">
+          Analyze securities with advanced <strong>Datrena</strong> <em>tools</em>
+        </p>
+
+        <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
+          {/* Data Layer */}
+          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition-colors cursor-pointer" onClick={handleSignIn}>
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+              <span className="text-gray-300 text-lg">📊</span>
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-2">Data Layer</h3>
+            <p className="text-gray-400 text-sm mb-4">Stream historical and live tick data and test live order flow metrics.</p>
+            <div className="flex flex-wrap gap-2">
+              {["Candlestick", "Footprint", "Cumulative Delta"].map(tag => (
+                <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Analysis Layer */}
+          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition-colors cursor-pointer" onClick={handleSignIn}>
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+              <span className="text-gray-300 text-lg">🧠</span>
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-2">Analysis Layer</h3>
+            <p className="text-gray-400 text-sm mb-4">Run advanced quant models and AI-driven statistical research.</p>
+            <div className="flex flex-wrap gap-2">
+              {["Volatility", "Return Skew", "Correlations", "AI Research"].map(tag => (
+                <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Insight Layer */}
+          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition-colors cursor-pointer" onClick={handleSignIn}>
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+              <span className="text-gray-300 text-lg">💡</span>
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-2">Insight Layer</h3>
+            <p className="text-gray-400 text-sm mb-4">Track prop firm performance and visualize trade history analytics.</p>
+            <div className="flex flex-wrap gap-2">
+              {["P&L Tracking", "Win Rate", "Drawdown", "Calendar"].map(tag => (
+                <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Validation Layer */}
+          <div className="bg-gray-900 rounded-2xl p-6 border border-gray-800 hover:border-gray-600 transition-colors cursor-pointer" onClick={handleSignIn}>
+            <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+              <span className="text-gray-300 text-lg">✅</span>
+            </div>
+            <h3 className="text-white text-xl font-semibold mb-2">Validation Layer</h3>
+            <p className="text-gray-400 text-sm mb-4">Backtest and validate strategies with walk-forward analysis.</p>
+            <div className="flex flex-wrap gap-2">
+              {["Backtesting", "Walk-Forward", "Monte Carlo", "Risk Metrics"].map(tag => (
+                <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
