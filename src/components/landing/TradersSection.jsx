@@ -19,16 +19,13 @@ const TAB_CONTENT = {
   },
   "Analysis Layer": {
     features: [
-      "Volatility Surface Modeling",
-      "Return Distribution Analysis",
-      "Correlation Matrix",
-      "AI Market Research",
-      "Z-Score Alerts",
-      "Regime Detection",
+      "Volatility Charting",
+      "Combinatorics",
+      "Data Analysis",
     ],
-    description: "The Analysis Layer provides deep quantitative tools to model volatility, correlations, and statistical distributions across securities.",
-    featureTitle: "Volatility Surface Modeling",
-    featureDescription: "Map implied volatility across strikes and expirations to identify pricing inefficiencies and term structure anomalies in real time.",
+    description: "The Analysis Layer provides quantitative tools for volatility charting, combinatorial analysis, and deep statistical data analysis across securities.",
+    featureTitle: "Volatility Charting",
+    featureDescription: "Visualize volatility across time and price to identify regime shifts, mean-reversion opportunities, and trend continuation setups in real time.",
     image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
   "Insight Layer": {
