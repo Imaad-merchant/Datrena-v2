@@ -18,11 +18,13 @@ const SECTIONS = [
 ];
 
 const TOP_STRATEGIES = [
-  { name: "ES Mean Reversion V2", author: "jkwon", winRate: "68%", pf: 2.1 },
-  { name: "NQ Opening Range Breakout", author: "tsmith", winRate: "61%", pf: 1.8 },
-  { name: "CL Volatility Squeeze", author: "mramirez", winRate: "72%", pf: 2.4 },
-  { name: "GC Trend Following", author: "alee", winRate: "55%", pf: 1.6 },
-  { name: "ZB Bond Momentum", author: "dpatel", winRate: "63%", pf: 1.9 },
+  { name: "Kinetic Tidal", author: "vortex_q", winRate: "68%", pf: 2.1 },
+  { name: "Mentik Short", author: "darkpool7", winRate: "61%", pf: 1.8 },
+  { name: "Phantom Cascade", author: "nx_trader", winRate: "72%", pf: 2.4 },
+  { name: "Oblique Surge V3", author: "qflo", winRate: "55%", pf: 1.6 },
+  { name: "Null Drift Alpha", author: "zeroslip", winRate: "63%", pf: 1.9 },
+  { name: "Vektor Bleed", author: "edgelab", winRate: "70%", pf: 2.2 },
+  { name: "Asymmetric Ghost", author: "m_quant", winRate: "58%", pf: 1.7 },
 ];
 
 const COURSES = [
