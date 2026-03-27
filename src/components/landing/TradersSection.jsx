@@ -15,7 +15,7 @@ const TAB_CONTENT = {
     description: "In the Data Layer, Level 3 is the most granular data feed available. It provides a real-time, unfiltered view of every individual order in the exchange's matching engine.",
     featureTitle: "Individual Order Visibility",
     featureDescription: "Provides an unfiltered view of the exchange matching engine, displaying every single buy and sell order separately rather than grouping them by price. This allows traders to distinguish between a single large institutional order and a cluster of smaller retail orders.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png",
+    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
   "Analysis Layer": {
     features: [
@@ -29,7 +29,7 @@ const TAB_CONTENT = {
     description: "The Analysis Layer provides deep quantitative tools to model volatility, correlations, and statistical distributions across securities.",
     featureTitle: "Volatility Surface Modeling",
     featureDescription: "Map implied volatility across strikes and expirations to identify pricing inefficiencies and term structure anomalies in real time.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png",
+    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
   "Insight Layer": {
     features: [
@@ -43,7 +43,7 @@ const TAB_CONTENT = {
     description: "The Insight Layer connects to your prop firm accounts and surfaces performance metrics, trade history, and risk analytics in one unified dashboard.",
     featureTitle: "Prop Firm Integration",
     featureDescription: "Connect directly to supported prop firms and automatically sync your trade history, account balances, and performance metrics without manual data entry.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png",
+    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
   "Validation Layer": {
     features: [
@@ -57,7 +57,7 @@ const TAB_CONTENT = {
     description: "The Validation Layer lets you rigorously test and validate trading strategies with historical data, walk-forward analysis, and statistical robustness checks.",
     featureTitle: "Walk-Forward Analysis",
     featureDescription: "Avoid overfitting by continuously re-optimizing your strategy on rolling windows and testing on unseen data, ensuring your edge holds up across different market regimes.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png",
+    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
 };
 
