@@ -41,7 +41,7 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
     : "";
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 pl-16">
+    <div className="min-h-screen bg-black text-gray-100 pl-16">
       <MainNav />
       <TerminalSettings
         symbol={symbol}

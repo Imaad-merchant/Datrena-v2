@@ -41,7 +41,7 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
     : "";
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 pl-16">
+    <div className="min-h-screen bg-black text-gray-100 pl-16">
       <MainNav />
       <div className="border-b border-gray-800 bg-gray-900/60 px-6 py-3 flex items-center gap-3">
         {data && (
@@ -53,7 +53,7 @@ NY Open Price: ${data.nyOpenPrice?.toFixed(2) ?? "N/A"}`
 
       <div className="flex h-[calc(100vh-110px)]">
         {/* Sidebar */}
-        <div className="w-72 border-r border-gray-800 bg-gray-900 p-4 flex-shrink-0 overflow-y-auto">
+        <div className="w-72 border-r border-gray-800 bg-gray-900/50 p-4 flex-shrink-0 overflow-y-auto">
           <TerminalSettings
             symbol={symbol}
             setSymbol={setSymbol}

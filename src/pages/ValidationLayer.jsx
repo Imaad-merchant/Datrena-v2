@@ -14,7 +14,7 @@ export default function ValidationLayer() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-950 pl-16">
+    <div className="min-h-screen bg-black pl-16">
       <MainNav />
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="mb-12">
@@ -28,21 +28,21 @@ export default function ValidationLayer() {
             return (
               <div
                 key={tool.page}
-                className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-green-500/50 transition-all cursor-pointer group"
+                className="bg-gray-900 border border-gray-800 rounded-xl p-6 hover:border-gray-600 transition-all cursor-pointer group"
                 onClick={() => navigate(createPageUrl(tool.page))}
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                    <Icon className="w-6 h-6 text-green-400" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-semibold text-white mb-2">{tool.name}</h3>
-                    <p className="text-gray-400 text-sm">{tool.description}</p>
-                  </div>
+                 <div className="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center">
+                   <Icon className="w-5 h-5 text-gray-300" />
+                 </div>
+                 <div className="flex-1">
+                   <h3 className="text-xl font-semibold text-white mb-2">{tool.name}</h3>
+                   <p className="text-gray-400 text-sm">{tool.description}</p>
+                 </div>
                 </div>
-              </div>
-            );
-          })}
+                </div>
+                );
+                })}
         </div>
       </div>
     </div>
