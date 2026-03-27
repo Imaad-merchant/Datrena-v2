@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import MainNav from "../components/navigation/MainNav";
-import { Check, X, Zap, Shield, Crown } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Check, X, Zap, Shield, Crown, Activity, ArrowLeft } from "lucide-react";
 
 const PLANS = [
   {
@@ -78,9 +78,17 @@ export default function Pricing() {
   const [selected, setSelected] = useState(null);
 
   return (
-    <div className="bg-gray-950 min-h-screen text-white">
-      <MainNav />
-      <div className="ml-16 px-10 py-12 max-w-6xl">
+    <div className="bg-black min-h-screen text-white">
+      <nav className="flex items-center justify-between px-10 py-5 border-b border-gray-900">
+        <div className="flex items-center gap-2">
+          <Activity className="w-5 h-5 text-white" />
+          <span className="text-white text-lg font-bold tracking-wide">Datrena</span>
+        </div>
+        <Link to="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
+          <ArrowLeft className="w-4 h-4" /> Back
+        </Link>
+      </nav>
+      <div className="px-10 py-12 max-w-6xl mx-auto">
 
         <div className="mb-10">
           <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Subscription</p>

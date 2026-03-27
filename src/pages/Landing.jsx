@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import TradersSection from "../components/landing/TradersSection";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { base44 } from "@/api/base44Client";
 import { Activity } from "lucide-react";
 
@@ -18,7 +18,7 @@ export default function Landing() {
           <span className="text-white text-lg font-bold tracking-wide">Datrena</span>
         </div>
         <div className="flex items-center gap-10">
-          <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Pricing</a>
+          <Link to="/Pricing" className="text-gray-300 hover:text-white text-sm transition-colors">Pricing</Link>
           <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Features</a>
           <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Forge Labs</a>
           <button

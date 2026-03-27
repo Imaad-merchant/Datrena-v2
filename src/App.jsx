@@ -35,6 +35,7 @@ const AuthenticatedApp = () => {
     <Routes>
       <Route path="/" element={<Landing />} />
       <Route path="/Home" element={<Landing />} />
+      <Route path="/Pricing" element={<Pricing />} />
       
       {/* Authenticated routes */}
       {user ? (
