@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Check, X, Zap, Shield, Crown, Activity, ArrowLeft } from "lucide-react";
+import { base44 } from "@/api/base44Client";
+import { Check, X, Zap, Shield, Crown, Activity } from "lucide-react";
 
 const PLANS = [
   {
@@ -79,14 +80,22 @@ export default function Pricing() {
 
   return (
     <div className="bg-black min-h-screen text-white">
-      <nav className="flex items-center justify-between px-10 py-5 border-b border-gray-900">
+      <nav className="flex items-center justify-between px-10 py-5 z-10 relative">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-white" />
-          <span className="text-white text-lg font-bold tracking-wide">Datrena</span>
+          <Link to="/" className="text-white text-lg font-bold tracking-wide hover:text-gray-300 transition-colors">Datrena</Link>
         </div>
-        <Link to="/" className="flex items-center gap-1 text-sm text-gray-400 hover:text-white transition-colors">
-          <ArrowLeft className="w-4 h-4" /> Back
-        </Link>
+        <div className="flex items-center gap-10">
+          <Link to="/Pricing" className="text-white text-sm transition-colors">Pricing</Link>
+          <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Features</a>
+          <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Forge Labs</a>
+          <button
+            onClick={() => base44.auth.redirectToLogin("/QuantHome")}
+            className="text-white text-sm font-semibold hover:text-gray-300 transition-colors ml-4"
+          >
+            Sign In
+          </button>
+        </div>
       </nav>
       <div className="px-10 py-12 max-w-6xl mx-auto">
 
