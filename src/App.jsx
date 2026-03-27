@@ -9,6 +9,8 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import QuantHome from './pages/QuantHome';
 import Landing from './pages/Landing';
 import Pricing from './pages/Pricing';
+import Features from './pages/Features';
+import ForgeLabs from './pages/ForgeLabs';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -36,6 +38,8 @@ const AuthenticatedApp = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/Home" element={<Landing />} />
       <Route path="/Pricing" element={<Pricing />} />
+      <Route path="/Features" element={<Features />} />
+      <Route path="/ForgeLabs" element={<ForgeLabs />} />
       
       {/* Authenticated routes */}
       {user ? (

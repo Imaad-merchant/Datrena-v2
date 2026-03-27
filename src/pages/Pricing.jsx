@@ -87,8 +87,8 @@ export default function Pricing() {
         </div>
         <div className="flex items-center gap-10">
           <Link to="/Pricing" className="text-white text-sm transition-colors">Pricing</Link>
-          <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Features</a>
-          <a href="#" className="text-gray-300 hover:text-white text-sm transition-colors">Forge Labs</a>
+          <Link to="/Features" className="text-gray-300 hover:text-white text-sm transition-colors">Features</Link>
+          <Link to="/ForgeLabs" className="text-gray-300 hover:text-white text-sm transition-colors">Forge Labs</Link>
           <button
             onClick={() => base44.auth.redirectToLogin("/QuantHome")}
             className="text-white text-sm font-semibold hover:text-gray-300 transition-colors ml-4"
