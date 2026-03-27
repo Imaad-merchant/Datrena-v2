@@ -4,58 +4,156 @@ const TABS = ["Data layer", "Analysis Layer", "Insight Layer", "Validation Layer
 
 const TAB_CONTENT = {
   "Data layer": {
-    features: [
-      "Individual Order Visibility",
-      "Queue Position Tracking",
-      "Order Lifecycle Transparency",
-      "Attributed Order IDs",
-      "Hidden Liquidity Detection",
-      "Granular Backtesting",
-      "Candlestick Chart",
-    ],
     description: "Level 3 is the most granular data feed available. It provides a real-time, unfiltered view of every individual order in the exchange's matching engine.",
-    featureTitle: "Level 3 Order Data",
-    featureDescription: "Provides an unfiltered view of the exchange matching engine, displaying every single buy and sell order separately rather than grouping them by price. This allows traders to distinguish between a single large institutional order and a cluster of smaller retail orders.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+    features: [
+      {
+        label: "Individual Order Visibility",
+        title: "Individual Order Visibility",
+        description: "See every single buy and sell order individually rather than grouped by price. This allows traders to distinguish between a single large institutional order and a cluster of smaller retail orders at the same price level.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Queue Position Tracking",
+        title: "Queue Position Tracking",
+        description: "Monitor where your orders sit in the exchange queue relative to other participants. Understanding queue position helps traders time entries and exits more precisely in highly competitive markets.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Order Lifecycle Transparency",
+        title: "Order Lifecycle Transparency",
+        description: "Track the full lifecycle of each order from submission to fill, modification, or cancellation. This visibility exposes market microstructure patterns invisible in standard Level 1 or 2 feeds.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Attributed Order IDs",
+        title: "Attributed Order IDs",
+        description: "Each order carries a unique ID allowing you to trace specific participants' activity across time. This enables detection of recurring algorithmic patterns and institutional order-routing behavior.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Hidden Liquidity Detection",
+        title: "Hidden Liquidity Detection",
+        description: "Identify iceberg orders and dark pool activity that never appear in the standard order book. Detecting hidden liquidity gives traders an edge when anticipating large directional moves.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Granular Backtesting",
+        title: "Granular Backtesting",
+        description: "Run strategies against tick-level historical data, capturing every order event instead of aggregated bars. This produces significantly more accurate performance estimates for high-frequency and microstructure-based systems.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Candlestick Chart",
+        title: "Candlestick Chart",
+        description: "View price action rendered as traditional OHLC candlesticks across multiple timeframes. Combined with order flow data, candlestick charts reveal the context behind each price move.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/ea49b83e1_Screenshot2026-03-19at55922PM.png",
+      },
+    ],
   },
   "Analysis Layer": {
-    features: [
-      "Volatility Charting",
-      "Combinatorics",
-      "Data Analysis",
-    ],
     description: "The Analysis Layer provides Artificial Intelligence with access to OHLCVD market data to perform automated statistical analytical tasks.",
-    featureTitle: "Volatility Charting",
-    featureDescription: "Visualize volatility across time and price to identify regime shifts, mean-reversion opportunities, and trend continuation setups in real time.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+    features: [
+      {
+        label: "Volatility Charting",
+        title: "Volatility Charting",
+        description: "Visualize volatility across time and price to identify regime shifts, mean-reversion opportunities, and trend continuation setups in real time.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Combinatorics",
+        title: "Combinatorics",
+        description: "Apply combinatorial analysis to discover statistically significant sequences of market events. This approach uncovers non-obvious edge patterns that are invisible to traditional indicator-based analysis.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Data Analysis",
+        title: "Data Analysis",
+        description: "Run deep quantitative analysis powered by AI on OHLCVD market data. Surface correlations, distributions, and behavioral patterns across multiple instruments and timeframes simultaneously.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+    ],
   },
   "Insight Layer": {
-    features: [
-      "P&L Tracking",
-      "Win Rate Analytics",
-      "Max Drawdown",
-      "Trade Calendar Heatmap",
-      "Prop Firm Integration",
-      "Performance Benchmarking",
-    ],
     description: "The Insight Layer connects to your prop firm accounts and surfaces performance metrics, trade history, and risk analytics in one unified dashboard.",
-    featureTitle: "Prop Firm Integration",
-    featureDescription: "Connect directly to supported prop firms and automatically sync your trade history, account balances, and performance metrics without manual data entry.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+    features: [
+      {
+        label: "P&L Tracking",
+        title: "P&L Tracking",
+        description: "Monitor your realized and unrealized profit and loss across all connected accounts in real time. Drill down by session, symbol, or date range to understand exactly where your edge is performing.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Win Rate Analytics",
+        title: "Win Rate Analytics",
+        description: "Track your win rate, average winner vs. average loser, and expectancy across all trades. Understand how these metrics evolve over time and under different market conditions.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Max Drawdown",
+        title: "Max Drawdown",
+        description: "Monitor your maximum peak-to-trough decline in real time to stay within prop firm risk limits. Visualize drawdown curves to identify periods of strategy underperformance before they escalate.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Trade Calendar Heatmap",
+        title: "Trade Calendar Heatmap",
+        description: "See your daily P&L displayed as a color-coded calendar heatmap. Instantly spot patterns in your performance across days of the week, months, and market sessions.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Prop Firm Integration",
+        title: "Prop Firm Integration",
+        description: "Connect directly to supported prop firms and automatically sync your trade history, account balances, and performance metrics without manual data entry.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Performance Benchmarking",
+        title: "Performance Benchmarking",
+        description: "Compare your trading performance against community benchmarks and top-ranked strategies. Understand how your risk-adjusted returns stack up against other traders on the platform.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+    ],
   },
   "Validation Layer": {
-    features: [
-      "Strategy Backtesting",
-      "Walk-Forward Analysis",
-      "Monte Carlo Simulation",
-      "Risk-Adjusted Metrics",
-      "Parameter Optimization",
-      "Out-of-Sample Testing",
-    ],
     description: "The Validation Layer lets you rigorously test and validate trading strategies with historical data, walk-forward analysis, and statistical robustness checks.",
-    featureTitle: "Walk-Forward Analysis",
-    featureDescription: "Avoid overfitting by continuously re-optimizing your strategy on rolling windows and testing on unseen data, ensuring your edge holds up across different market regimes.",
-    image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+    features: [
+      {
+        label: "Strategy Backtesting",
+        title: "Strategy Backtesting",
+        description: "Test your trading strategies against years of historical data with precise tick-level accuracy. Evaluate performance across different market regimes, sessions, and instrument types.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Walk-Forward Analysis",
+        title: "Walk-Forward Analysis",
+        description: "Avoid overfitting by continuously re-optimizing your strategy on rolling windows and testing on unseen data, ensuring your edge holds up across different market regimes.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Monte Carlo Simulation",
+        title: "Monte Carlo Simulation",
+        description: "Run thousands of simulated trade sequences to understand the probability distribution of your strategy's outcomes. Quantify worst-case drawdown scenarios before risking real capital.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Risk-Adjusted Metrics",
+        title: "Risk-Adjusted Metrics",
+        description: "Evaluate your strategy using Sharpe ratio, Sortino ratio, Calmar ratio, and other industry-standard risk-adjusted performance measures beyond simple win rate or P&L.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Parameter Optimization",
+        title: "Parameter Optimization",
+        description: "Systematically search for optimal strategy parameters using grid search and genetic algorithms. Visualize parameter sensitivity surfaces to identify robust configurations.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+      {
+        label: "Out-of-Sample Testing",
+        title: "Out-of-Sample Testing",
+        description: "Reserve a portion of your data exclusively for final validation, never touched during optimization. This provides an honest, unbiased estimate of how your strategy will perform in live markets.",
+        image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
+      },
+    ],
   },
 };
 
@@ -68,7 +166,14 @@ const EXCHANGES = [
 
 export default function TradersSection({ onSignIn }) {
   const [activeTab, setActiveTab] = useState("Data layer");
+  const [activeFeature, setActiveFeature] = useState(0);
   const content = TAB_CONTENT[activeTab];
+  const selectedFeature = content.features[activeFeature] || content.features[0];
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setActiveFeature(0);
+  };
 
   return (
     <div className="bg-black px-10 py-16 border-t border-gray-800">
@@ -85,7 +190,7 @@ export default function TradersSection({ onSignIn }) {
             {TABS.map(tab => (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => handleTabChange(tab)}
                 className={`px-4 py-1.5 rounded-full text-sm font-medium transition-colors border ${
                   activeTab === tab
                     ? "bg-white text-black border-white"
@@ -103,10 +208,10 @@ export default function TradersSection({ onSignIn }) {
             {content.features.map((f, i) => (
               <li key={i}>
                 <button
-                  className="text-blue-400 underline text-sm hover:text-blue-300 transition-colors text-left"
-                  onClick={onSignIn}
+                  className={`text-sm transition-colors text-left ${activeFeature === i ? 'text-white font-semibold' : 'text-blue-400 underline hover:text-blue-300'}`}
+                  onClick={() => setActiveFeature(i)}
                 >
-                  {f}
+                  {f.label}
                 </button>
               </li>
             ))}
@@ -116,14 +221,14 @@ export default function TradersSection({ onSignIn }) {
         {/* Right */}
         <div className="w-1/2 flex flex-col gap-4">
           <img
-            src={content.image}
-            alt="Layer preview"
+            src={selectedFeature.image}
+            alt={selectedFeature.title}
             className="rounded-xl w-full object-cover"
             style={{ maxHeight: 280 }}
           />
           <div>
-            <h4 className="text-white font-semibold mb-2">{content.featureTitle}</h4>
-            <p className="text-gray-400 text-sm leading-relaxed">{content.featureDescription}</p>
+            <h4 className="text-white font-semibold mb-2">{selectedFeature.title}</h4>
+            <p className="text-gray-400 text-sm leading-relaxed">{selectedFeature.description}</p>
           </div>
         </div>
       </div>
