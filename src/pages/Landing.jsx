@@ -94,7 +94,7 @@ export default function Landing() {
             <h3 className="text-white text-xl font-semibold mb-2">Analysis Layer</h3>
             <p className="text-gray-400 text-sm mb-4">Run advanced quant models and AI-driven statistical research.</p>
             <div className="flex flex-wrap gap-2">
-              {["Volatility", "Return Skew", "Correlations", "AI Research"].map(tag => (
+              {["Volatility Charting", "Combinatorics", "Data Analysis"].map(tag => (
                 <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
               ))}
             </div>

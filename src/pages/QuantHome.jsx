@@ -22,8 +22,8 @@ export default function QuantHome() {
       icon: TrendingUp, 
       color: "#8b5cf6", 
       page: "AnalysisLayer",
-      description: "Statistical analysis and volatility insights with AI assistance",
-      tools: ["Volatility Heatmaps", "Session Analysis", "AI Chat", "Pattern Detection"]
+      description: "Volatility charting, combinatorics, and deep statistical data analysis.",
+      tools: ["Volatility Charting", "Combinatorics", "Data Analysis"]
     },
     { 
       name: "Insight Layer", 
