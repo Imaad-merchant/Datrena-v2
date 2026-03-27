@@ -18,13 +18,13 @@ const SECTIONS = [
 ];
 
 const TOP_STRATEGIES = [
-  { name: "Kinetic Tidal", author: "vortex_q", winRate: "68%", pf: 2.1 },
-  { name: "Mentik Short", author: "darkpool7", winRate: "61%", pf: 1.8 },
-  { name: "Phantom Cascade", author: "nx_trader", winRate: "72%", pf: 2.4 },
-  { name: "Oblique Surge V3", author: "qflo", winRate: "55%", pf: 1.6 },
-  { name: "Null Drift Alpha", author: "zeroslip", winRate: "63%", pf: 1.9 },
-  { name: "Vektor Bleed", author: "edgelab", winRate: "70%", pf: 2.2 },
-  { name: "Asymmetric Ghost", author: "m_quant", winRate: "58%", pf: 1.7 },
+  { name: "ES Opening Drive Fade", author: "vortex_q", winRate: "68%", pf: 2.1 },
+  { name: "NQ VWAP Reclaim Long", author: "darkpool7", winRate: "61%", pf: 1.8 },
+  { name: "CL Supply Zone Reversal", author: "nx_trader", winRate: "72%", pf: 2.4 },
+  { name: "ES Gap Fill Scalp", author: "qflo", winRate: "55%", pf: 1.6 },
+  { name: "NQ Delta Divergence Short", author: "zeroslip", winRate: "63%", pf: 1.9 },
+  { name: "MNQ Imbalance Hunter", author: "edgelab", winRate: "70%", pf: 2.2 },
+  { name: "RTY Liquidity Sweep", author: "m_quant", winRate: "58%", pf: 1.7 },
 ];
 
 const COURSES = [
