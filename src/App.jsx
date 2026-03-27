@@ -8,6 +8,7 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import QuantHome from './pages/QuantHome';
 import Landing from './pages/Landing';
+import Pricing from './pages/Pricing';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -39,6 +40,7 @@ const AuthenticatedApp = () => {
       {user ? (
         <>
           <Route path="/QuantHome" element={<QuantHome />} />
+          <Route path="/Pricing" element={<Pricing />} />
           {Object.entries(Pages).map(([path, Page]) => (
             <Route
               key={path}
