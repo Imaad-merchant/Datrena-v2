@@ -44,12 +44,12 @@ export default function QuantHome() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-950 pl-16">
+    <div className="min-h-screen bg-black pl-16">
       <MainNav />
       
       <div className="relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
+        <div className="absolute inset-0 opacity-5">
           <div className="absolute top-20 left-20 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
           <div className="absolute top-40 right-40 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
           <div className="absolute bottom-20 left-1/2 w-96 h-96 bg-yellow-500/20 rounded-full blur-3xl" />
@@ -59,10 +59,10 @@ export default function QuantHome() {
           {/* Hero */}
           <div className="text-center mb-16">
             <div className="flex items-center justify-center gap-3 mb-4">
-              <Activity className="w-10 h-10 text-yellow-400" />
-              <h1 className="text-5xl font-bold text-white">Datrena</h1>
+              <Activity className="w-8 h-8 text-white" />
+              <h1 className="text-5xl font-bold text-white tracking-wide">Datrena</h1>
             </div>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-sm text-gray-400 max-w-3xl mx-auto">
               Professional-grade quantitative trading platform organized into four integrated layers
             </p>
           </div>
@@ -74,18 +74,16 @@ export default function QuantHome() {
               return (
                 <div
                   key={layer.page}
-                  className="group relative bg-gradient-to-br from-gray-800/50 to-gray-900/50 backdrop-blur border border-gray-700 rounded-2xl p-8 hover:border-opacity-100 transition-all duration-300 cursor-pointer"
+                  className="group relative bg-gray-900 border border-gray-800 rounded-2xl p-8 hover:border-gray-600 transition-all duration-300 cursor-pointer"
                   style={{ borderColor: layer.color + '30' }}
                   onClick={() => navigate(createPageUrl(layer.page))}
                 >
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl" 
-                       style={{ background: `linear-gradient(to bottom right, ${layer.color}10, transparent)` }} />
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-5 transition-opacity rounded-2xl bg-white" />
                   
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-14 h-14 rounded-xl flex items-center justify-center transition-all" 
-                           style={{ backgroundColor: layer.color + '20' }}>
-                        <Icon className="w-7 h-7" style={{ color: layer.color }} />
+                      <div className="w-10 h-10 bg-gray-700 rounded-full flex items-center justify-center">
+                        <Icon className="w-5 h-5 text-gray-300" />
                       </div>
                       <ArrowRight className="w-5 h-5 text-gray-600 group-hover:text-gray-400 group-hover:translate-x-1 transition-all" />
                     </div>
@@ -95,17 +93,7 @@ export default function QuantHome() {
                     
                     <div className="flex flex-wrap gap-2">
                       {layer.tools.map((tool, i) => (
-                        <span 
-                          key={i} 
-                          className="text-xs px-3 py-1 rounded-full border"
-                          style={{ 
-                            borderColor: layer.color + '40',
-                            color: layer.color,
-                            backgroundColor: layer.color + '10'
-                          }}
-                        >
-                          {tool}
-                        </span>
+                        <span key={i} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tool}</span>
                       ))}
                     </div>
                   </div>
@@ -116,10 +104,10 @@ export default function QuantHome() {
 
           {/* Quick Start */}
           <div className="mt-16 text-center">
-            <div className="inline-flex items-center gap-4 bg-gray-800/50 border border-gray-700 rounded-xl px-8 py-4">
-              <span className="text-gray-300">Ready to start?</span>
+            <div className="inline-flex items-center gap-4 bg-gray-900 border border-gray-800 rounded-xl px-8 py-4">
+              <span className="text-gray-300 text-sm">Ready to start?</span>
               <Button 
-                className="bg-yellow-500 hover:bg-yellow-600 text-gray-950 font-semibold"
+                className="bg-white hover:bg-gray-200 text-black font-semibold rounded-full text-sm px-5"
                 onClick={() => navigate(createPageUrl("AnalysisLayer"))}
               >
                 Launch Analysis
