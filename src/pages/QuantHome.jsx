@@ -15,7 +15,7 @@ export default function QuantHome() {
       color: "#3b82f6", 
       page: "DataLayer",
       description: "Access market data, order flow, and real-time price feeds",
-      tools: ["OHLCV Charts", "Footprint Analysis", "Order Flow", "Market Depth"]
+      tools: ["DOM Footprint", "Delta / Volume Logic", "Candlestick Chart"]
     },
     { 
       name: "Analysis Layer", 

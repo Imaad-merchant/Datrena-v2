@@ -5,16 +5,13 @@ const TABS = ["Data layer", "Analysis Layer", "Insight Layer", "Validation Layer
 const TAB_CONTENT = {
   "Data layer": {
     features: [
-      "Individual Order Visibility",
-      "Queue Position Tracking",
-      "Order Lifecycle Transparency",
-      "Attributed Order IDs",
-      "Hidden Liquidity Detection",
-      "Granular Backtesting",
+      "DOM Footprint",
+      "Delta / Volume Logic",
+      "Candlestick Chart",
     ],
-    description: "In the Data Layer, Level 3 is the most granular data feed available. It provides a real-time, unfiltered view of every individual order in the exchange's matching engine.",
-    featureTitle: "Individual Order Visibility",
-    featureDescription: "Provides an unfiltered view of the exchange matching engine, displaying every single buy and sell order separately rather than grouping them by price. This allows traders to distinguish between a single large institutional order and a cluster of smaller retail orders.",
+    description: "The Data Layer provides real-time market microstructure tools including DOM footprint, delta/volume logic, and candlestick charting.",
+    featureTitle: "DOM Footprint",
+    featureDescription: "Visualize order flow at each price level with bid/ask volume, delta, and imbalance data to understand where buyers and sellers are most active., displaying every single buy and sell order separately rather than grouping them by price. This allows traders to distinguish between a single large institutional order and a cluster of smaller retail orders.",
     image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
   },
   "Analysis Layer": {

@@ -80,7 +80,7 @@ export default function Landing() {
             <h3 className="text-white text-xl font-semibold mb-2">Data Layer</h3>
             <p className="text-gray-400 text-sm mb-4">Stream historical and live tick data and test live order flow metrics.</p>
             <div className="flex flex-wrap gap-2">
-              {["Candlestick", "Footprint", "Cumulative Delta"].map(tag => (
+              {["DOM Footprint", "Delta / Volume Logic", "Candlestick Chart"].map(tag => (
                 <span key={tag} className="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded">{tag}</span>
               ))}
             </div>
