@@ -18,13 +18,13 @@ const SECTIONS = [
 ];
 
 const TOP_STRATEGIES = [
-  { name: "ES Opening Drive Fade", author: "vortex_q", winRate: "68%", pf: 2.1 },
-  { name: "NQ VWAP Reclaim Long", author: "darkpool7", winRate: "61%", pf: 1.8 },
-  { name: "CL Supply Zone Reversal", author: "nx_trader", winRate: "72%", pf: 2.4 },
-  { name: "ES Gap Fill Scalp", author: "qflo", winRate: "55%", pf: 1.6 },
-  { name: "NQ Delta Divergence Short", author: "zeroslip", winRate: "63%", pf: 1.9 },
-  { name: "MNQ Imbalance Hunter", author: "edgelab", winRate: "70%", pf: 2.2 },
-  { name: "RTY Liquidity Sweep", author: "m_quant", winRate: "58%", pf: 1.7 },
+  { rank: 1, name: "CL Supply Zone Reversal", author: "nx_trader", winRate: "72%", pf: 2.4 },
+  { rank: 2, name: "MNQ Imbalance Hunter", author: "edgelab", winRate: "70%", pf: 2.2 },
+  { rank: 3, name: "ES Opening Drive Fade", author: "vortex_q", winRate: "68%", pf: 2.1 },
+  { rank: 4, name: "NQ Delta Divergence Short", author: "zeroslip", winRate: "63%", pf: 1.9 },
+  { rank: 5, name: "NQ VWAP Reclaim Long", author: "darkpool7", winRate: "61%", pf: 1.8 },
+  { rank: 6, name: "RTY Liquidity Sweep", author: "m_quant", winRate: "58%", pf: 1.7 },
+  { rank: 7, name: "ES Gap Fill Scalp", author: "qflo", winRate: "55%", pf: 1.6 },
 ];
 
 const COURSES = [
@@ -129,13 +129,15 @@ export default function ValidationLayer() {
               <h2 className="text-sm font-semibold text-white">Top Published Strategies</h2>
             </div>
             <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
-              <div className="grid grid-cols-4 text-xs text-gray-500 uppercase tracking-wider px-4 py-2 border-b border-gray-800">
+              <div className="grid grid-cols-5 text-xs text-gray-500 uppercase tracking-wider px-4 py-2 border-b border-gray-800">
+                <span>#</span>
                 <span className="col-span-2">Strategy</span>
                 <span>Win Rate</span>
                 <span>Profit Factor</span>
               </div>
               {TOP_STRATEGIES.map((s, i) => (
-                <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-gray-800/50 last:border-0 hover:bg-gray-800/40 transition-colors cursor-pointer">
+                <div key={i} className="grid grid-cols-5 px-4 py-3 border-b border-gray-800/50 last:border-0 hover:bg-gray-800/40 transition-colors cursor-pointer">
+                  <span className="text-sm text-gray-500 self-center font-mono">#{s.rank}</span>
                   <div className="col-span-2">
                     <p className="text-sm text-white">{s.name}</p>
                     <p className="text-xs text-gray-500">by {s.author}</p>
