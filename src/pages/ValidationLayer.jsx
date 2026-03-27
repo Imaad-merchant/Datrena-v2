@@ -4,7 +4,8 @@ import { createPageUrl } from "@/utils";
 import MainNav from "../components/navigation/MainNav";
 import { 
   Plus, FolderOpen, ArrowRight, Building2, BookOpen, 
-  Database, BarChart2, Radio, HeadphonesIcon, Trash2, Play
+  Database, BarChart2, Radio, HeadphonesIcon, Trash2, Play,
+  Trophy, GraduationCap, StickyNote, TrendingUp as TrendUp
 } from "lucide-react";
 
 const SECTIONS = [
@@ -16,6 +17,21 @@ const SECTIONS = [
   { name: "Support", icon: HeadphonesIcon, page: "Support", description: "Get help, submit tickets, and access documentation." },
 ];
 
+const TOP_STRATEGIES = [
+  { name: "ES Mean Reversion V2", author: "jkwon", winRate: "68%", pf: 2.1 },
+  { name: "NQ Opening Range Breakout", author: "tsmith", winRate: "61%", pf: 1.8 },
+  { name: "CL Volatility Squeeze", author: "mramirez", winRate: "72%", pf: 2.4 },
+  { name: "GC Trend Following", author: "alee", winRate: "55%", pf: 1.6 },
+  { name: "ZB Bond Momentum", author: "dpatel", winRate: "63%", pf: 1.9 },
+];
+
+const COURSES = [
+  { title: "Intro to Quantitative Trading", lessons: 12, level: "Beginner" },
+  { title: "Order Flow & Footprint Charts", lessons: 8, level: "Intermediate" },
+  { title: "Statistical Edge & Expectancy", lessons: 10, level: "Intermediate" },
+  { title: "Backtesting Methodology", lessons: 7, level: "Advanced" },
+];
+
 const INITIAL_PROJECTS = [
   { id: 1, name: "ES Volatility Study", section: "Strategies", lastOpened: "2 hours ago" },
   { id: 2, name: "NQ Footprint Analysis", section: "Datasets", lastOpened: "Yesterday" },
@@ -25,6 +41,7 @@ const INITIAL_PROJECTS = [
 export default function ValidationLayer() {
   const navigate = useNavigate();
   const [projects, setProjects] = useState(INITIAL_PROJECTS);
+  const [note, setNote] = useState("");
 
   const deleteProject = (id) => setProjects(prev => prev.filter(p => p.id !== id));
 
@@ -100,32 +117,71 @@ export default function ValidationLayer() {
           </div>
         </div>
 
-        {/* Right Column - Section Cards */}
-        <div className="col-span-2">
-          <h2 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-6">Overview</h2>
-          <div className="grid grid-cols-2 gap-4">
-            {SECTIONS.map((section) => {
-              const Icon = section.icon;
-              return (
-                <div
-                  key={section.name}
-                  onClick={() => navigate(createPageUrl(section.page))}
-                  className="bg-gray-900 border border-gray-800 rounded-xl p-5 hover:border-gray-600 transition-all cursor-pointer group"
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-8 h-8 bg-gray-800 rounded-full flex items-center justify-center">
-                      <Icon className="w-4 h-4 text-gray-300" />
-                    </div>
-                    <h3 className="text-sm font-semibold text-white">{section.name}</h3>
+        {/* Right Column */}
+        <div className="col-span-2 space-y-8">
+
+          {/* Top Strategies */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <Trophy className="w-4 h-4 text-yellow-400" />
+              <h2 className="text-sm font-semibold text-white">Top Published Strategies</h2>
+            </div>
+            <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
+              <div className="grid grid-cols-4 text-xs text-gray-500 uppercase tracking-wider px-4 py-2 border-b border-gray-800">
+                <span className="col-span-2">Strategy</span>
+                <span>Win Rate</span>
+                <span>Profit Factor</span>
+              </div>
+              {TOP_STRATEGIES.map((s, i) => (
+                <div key={i} className="grid grid-cols-4 px-4 py-3 border-b border-gray-800/50 last:border-0 hover:bg-gray-800/40 transition-colors cursor-pointer">
+                  <div className="col-span-2">
+                    <p className="text-sm text-white">{s.name}</p>
+                    <p className="text-xs text-gray-500">by {s.author}</p>
                   </div>
-                  <p className="text-xs text-gray-500 leading-relaxed">{section.description}</p>
-                  <div className="mt-3 flex items-center gap-1 text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    Open <ArrowRight className="w-3 h-3" />
+                  <span className="text-sm text-green-400 self-center">{s.winRate}</span>
+                  <span className="text-sm text-blue-400 self-center">{s.pf}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Courses */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <GraduationCap className="w-4 h-4 text-purple-400" />
+              <h2 className="text-sm font-semibold text-white">Learning</h2>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {COURSES.map((c, i) => (
+                <div key={i} className="bg-gray-900 border border-gray-800 rounded-xl p-4 hover:border-gray-600 transition-all cursor-pointer group">
+                  <p className="text-sm text-white font-medium mb-1">{c.title}</p>
+                  <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <span>{c.lessons} lessons</span>
+                    <span className="px-2 py-0.5 bg-gray-800 rounded text-gray-400">{c.level}</span>
+                  </div>
+                  <div className="mt-2 flex items-center gap-1 text-xs text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
+                    Start <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
-              );
-            })}
+              ))}
+            </div>
           </div>
+
+          {/* Notes */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <StickyNote className="w-4 h-4 text-amber-400" />
+              <h2 className="text-sm font-semibold text-white">Notes</h2>
+            </div>
+            <textarea
+              value={note}
+              onChange={(e) => setNote(e.target.value)}
+              placeholder="Jot down ideas, observations, or reminders..."
+              className="w-full bg-gray-900 border border-gray-800 rounded-xl p-4 text-sm text-gray-300 placeholder-gray-600 resize-none focus:outline-none focus:border-gray-600 transition-colors"
+              rows={4}
+            />
+          </div>
+
         </div>
 
       </div>
