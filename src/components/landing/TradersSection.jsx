@@ -24,7 +24,7 @@ const TAB_CONTENT = {
       "Combinatorics",
       "Data Analysis",
     ],
-    description: "The Analysis Layer provides quantitative tools for volatility charting, combinatorial analysis, and deep statistical data analysis across securities.",
+    description: "The Analysis Layer provides Artificial Intelligence with access to OHLCVD market data to perform automated statistical analytical tasks.",
     featureTitle: "Volatility Charting",
     featureDescription: "Visualize volatility across time and price to identify regime shifts, mean-reversion opportunities, and trend continuation setups in real time.",
     image: "https://media.base44.com/images/public/69a877fa3c3927b616239696/3a9979a97_image.png",
