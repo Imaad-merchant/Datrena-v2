@@ -8,7 +8,7 @@ import { AlertCircle, Loader2, Activity } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function Terminal() {
-  const [symbol, setSymbol] = useState("NQ=F");
+  const [symbol, setSymbol] = useState("ES=F");
   const [lookbackDays, setLookbackDays] = useState(30);
   const [timeframe, setTimeframe] = useState("1h");
   const [data, setData] = useState(null);

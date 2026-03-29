@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Play, Loader2 } from "lucide-react";
 
-const COMMON_TICKERS = ["NQ=F", "ES=F", "SPY", "QQQ", "AAPL", "TSLA", "MSFT", "BTC-USD", "GC=F", "CL=F"];
+const COMMON_TICKERS = ["ES=F", "NQ=F", "SPY", "QQQ", "AAPL", "TSLA", "MSFT", "BTC-USD", "GC=F", "CL=F"];
 const TIMEFRAMES = ["1m", "2m", "5m", "15m", "30m", "1h", "4h", "1d"];
 
 export default function TerminalSettings({ symbol, setSymbol, lookbackDays, setLookbackDays, timeframe, setTimeframe, onRun, loading }) {
@@ -18,7 +18,7 @@ export default function TerminalSettings({ symbol, setSymbol, lookbackDays, setL
             value={symbol}
             onChange={e => setSymbol(e.target.value.toUpperCase())}
             className="bg-gray-800 border-gray-700 text-white placeholder-gray-500 focus:border-yellow-500 w-32"
-            placeholder="e.g. NQ=F"
+            placeholder="e.g. ES=F"
             onKeyDown={e => e.key === 'Enter' && onRun()}
           />
         </div>

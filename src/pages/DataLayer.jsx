@@ -15,7 +15,7 @@ export default function DataLayer() {
   const [ohlc, setOhlc] = useState({});
   const [status, setStatus] = useState("disconnected");
   const [loadingHistory, setLoadingHistory] = useState(true);
-  const [ticker, setTicker] = useState("NQ=F");
+  const [ticker, setTicker] = useState("ES=F");
   const [timeframe, setTimeframe] = useState("1m");
   const chartRef = useRef(null);
   const tvChartRef = useRef(null);
