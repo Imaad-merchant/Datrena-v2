@@ -212,7 +212,7 @@ export default function FootprintChart() {
 
       {/* Header */}
       <div style={{ borderBottom: "1px solid #1e1e2e", background: "#0f0f1a", padding: "10px 20px", display: "flex", alignItems: "center", gap: 12 }}>
-        <span style={{ fontWeight: 600, fontSize: 15, fontFamily: "sans-serif", color: "#fff" }}>NQM5 · Footprint</span>
+        <span style={{ fontWeight: 600, fontSize: 15, fontFamily: "sans-serif", color: "#fff" }}>{ticker.replace("=F", "")} · Footprint</span>
 
         {/* Timeframe buttons */}
         <div style={{ display: "flex", gap: 4, marginLeft: 8 }}>
@@ -232,8 +232,8 @@ export default function FootprintChart() {
           background: "#111827", border: "1px solid #1e1e2e", color: "#aaa",
           borderRadius: 4, padding: "2px 8px", fontSize: 11, fontFamily: "sans-serif", cursor: "pointer"
         }}>
-          <option value="NQ=F">NQ Futures</option>
           <option value="ES=F">ES Futures</option>
+          <option value="NQ=F">NQ Futures</option>
           <option value="CL=F">CL Futures</option>
           <option value="GC=F">GC Futures</option>
         </select>
