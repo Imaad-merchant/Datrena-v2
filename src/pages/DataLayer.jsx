@@ -6,7 +6,8 @@ import { base44 } from "@/api/base44Client";
 
 const WS_URL = "wss://elsa-censureless-joyce.ngrok-free.dev";
 const TICK_SIZE = 0.25;
-const MAX_CANDLES = 25;
+const MAX_CANDLES = 20;
+const MAX_ROWS = 70;     // max visible price levels — prevents vertical sprawl
 const CELL_H = 20;
 const CELL_W = 90;       // wider: sell | candle | buy
 const CANDLE_W = 6;      // body bar width
@@ -130,8 +131,15 @@ export default function DataLayer() {
   const [loadingHistory, setLoading] = useState(true);
   const [ticker, setTicker]         = useState("ES=F");
   const [timeframe, setTimeframe]   = useState("5m");
-  const wsRef  = useRef(null);
+  const wsRef   = useRef(null);
   const gridRef = useRef(null);
+
+  // Auto-scroll to latest candle whenever data loads
+  useEffect(() => {
+    if (gridRef.current && buckets.length > 0) {
+      gridRef.current.scrollLeft = gridRef.current.scrollWidth;
+    }
+  }, [buckets.length]);
 
   /* fetch Yahoo Finance history */
   const fetchHistory = useCallback(async (sym, tf) => {
@@ -219,8 +227,16 @@ export default function DataLayer() {
   const allPrices = useMemo(() => {
     const ps = new Set();
     buckets.forEach((b) => Object.keys(candles[b]).forEach((p) => ps.add(parseFloat(p))));
-    return Array.from(ps).sort((a, b) => b - a);
-  }, [buckets, candles]);
+    const sorted = Array.from(ps).sort((a, b) => b - a);
+    if (sorted.length <= MAX_ROWS) return sorted;
+    // Cap to MAX_ROWS levels centered on the most recent candle's midpoint
+    const lastBucket = buckets[buckets.length - 1];
+    const lastBar = ohlc[lastBucket];
+    const centerP = lastBar ? (lastBar.high + lastBar.low) / 2 : sorted[Math.floor(sorted.length / 2)];
+    const ci = sorted.findIndex((p) => p <= centerP);
+    const start = Math.max(0, Math.min(ci - Math.floor(MAX_ROWS / 2), sorted.length - MAX_ROWS));
+    return sorted.slice(start, start + MAX_ROWS);
+  }, [buckets, candles, ohlc]);
 
   const volProfile = useMemo(() => {
     const vp = {};
@@ -374,86 +390,82 @@ export default function DataLayer() {
                   {/* ── Candle stick overlay ── */}
                   <CandleOverlay bar={bar} allPrices={allPrices} />
 
-                  {/* ── Price level cells ── */}
-                  {allPrices.map((p) => {
-                    const cell     = (candles[bucket] || {})[p];
-                    const total    = cell ? cell.b + cell.a : 0;
-                    const inRange  = bar && p >= lowP  && p <= highP;
-                    const inBody   = bar && p >= (isGreen ? openP : closeP) && p <= (isGreen ? closeP : openP);
-                    const isOpenP  = bar && Math.abs(p - openP)  < TICK_SIZE * 0.1;
-                    const isCloseP = bar && Math.abs(p - closeP) < TICK_SIZE * 0.1;
-
-                    // dashed border marks open/close
-                    const borderTop    = isCloseP && isGreen ? "2px dashed rgba(251,146,60,0.8)" : isOpenP && !isGreen ? "2px dashed rgba(251,146,60,0.8)" : "1px solid #111";
-                    const borderBottom = isOpenP  && isGreen ? "2px dashed rgba(251,146,60,0.8)" : isCloseP && !isGreen ? "2px dashed rgba(251,146,60,0.8)" : "1px solid #111";
-
-                    // cell background
-                    let bg = "#0a0a0f";
-                    if (inRange) {
-                      if (inBody) bg = isGreen ? "rgba(22,163,74,0.13)" : "rgba(220,38,38,0.13)";
-                      else        bg = "rgba(255,255,255,0.02)";
+                  {/* ── Price level cells — only render rows inside candle range ── */}
+                  {(() => {
+                    if (!bar || highP === null || lowP === null) {
+                      // No bar data: render full-height blank spacer
+                      return <div style={{ height: allPrices.length * CELL_H, width: CELL_W, background: "#0a0a0f" }} />;
                     }
 
-                    if (!cell || total === 0) {
-                      return (
-                        <div key={p} style={{ height: CELL_H, width: CELL_W, background: bg, borderTop, borderBottom, borderLeft: "1px solid #111", borderRight: "1px solid #111", position: "relative", zIndex: 1 }} />
-                      );
-                    }
-
-                    const askDom = cell.a >= cell.b;
-                    const ratio  = askDom
-                      ? (cell.b > 0 ? cell.a / cell.b : 999)
-                      : (cell.a > 0 ? cell.b / cell.a : 999);
-                    const imbalance = total > 5 && ratio >= 3;
-                    const isPOC     = (volProfile[p] || 0) === maxVol;
-
-                    // override bg if volumetric intensity warrants it
-                    if (inRange && total > 0) {
-                      const intensity = Math.min(Math.max(cell.b, cell.a) / 300, 1);
-                      if (inBody) bg = askDom
-                        ? `rgba(22,163,74,${0.12 + intensity * 0.40})`
-                        : `rgba(220,38,38,${0.12 + intensity * 0.40})`;
-                      else bg = askDom
-                        ? `rgba(22,163,74,${0.03 + intensity * 0.15})`
-                        : `rgba(220,38,38,${0.03 + intensity * 0.15})`;
-                    }
-
-                    const sellColor = imbalance && !askDom ? "#fb923c" : !askDom ? "#fca5a5" : "#4a4a6a";
-                    const buyColor  = imbalance &&  askDom ? "#fb923c" :  askDom ? "#86efac" : "#4a4a6a";
-                    const sellW     = !askDom ? 700 : 400;
-                    const buyW      =  askDom ? 700 : 400;
-
-                    const half = CELL_W / 2;
+                    const aboveCount = allPrices.filter((p) => p > highP).length;
+                    const belowCount = allPrices.filter((p) => p < lowP).length;
+                    const inRange    = allPrices.filter((p) => p >= lowP && p <= highP);
+                    const half       = CELL_W / 2;
 
                     return (
-                      <div key={p} style={{
-                        height: CELL_H, width: CELL_W,
-                        background: bg,
-                        borderTop, borderBottom,
-                        borderLeft:  isPOC ? "1px solid rgba(245,158,11,0.3)" : "1px solid #111",
-                        borderRight: isPOC ? "1px solid rgba(245,158,11,0.3)" : "1px solid #111",
-                        display: "flex", alignItems: "center",
-                        position: "relative", zIndex: 3,   // text above candle overlay
-                      }}>
-                        {/* Sell (bid) — left half, right-aligned */}
-                        <span style={{
-                          display: "inline-block", width: half - 5, textAlign: "right",
-                          paddingRight: 8, fontSize: 9, fontWeight: sellW, color: sellColor,
-                          lineHeight: 1,
-                        }}>
-                          {cell.b > 0 ? cell.b : ""}
-                        </span>
-                        {/* Buy (ask) — right half, left-aligned */}
-                        <span style={{
-                          display: "inline-block", width: half - 5, textAlign: "left",
-                          paddingLeft: 8, fontSize: 9, fontWeight: buyW, color: buyColor,
-                          lineHeight: 1,
-                        }}>
-                          {cell.a > 0 ? cell.a : ""}
-                        </span>
-                      </div>
+                      <>
+                        {/* Empty rows above candle high */}
+                        {aboveCount > 0 && (
+                          <div style={{ height: aboveCount * CELL_H, width: CELL_W, background: "#0a0a0f", flexShrink: 0 }} />
+                        )}
+
+                        {/* Cells within candle high-low range */}
+                        {inRange.map((p) => {
+                          const cell     = (candles[bucket] || {})[p];
+                          const total    = cell ? cell.b + cell.a : 0;
+                          const inBody   = p >= (isGreen ? openP : closeP) && p <= (isGreen ? closeP : openP);
+                          const isOpenP  = Math.abs(p - openP)  < TICK_SIZE * 0.1;
+                          const isCloseP = Math.abs(p - closeP) < TICK_SIZE * 0.1;
+
+                          const borderTop    = (isCloseP && isGreen) || (isOpenP  && !isGreen) ? "2px dashed rgba(251,146,60,0.8)" : "1px solid #111";
+                          const borderBottom = (isOpenP  && isGreen) || (isCloseP && !isGreen) ? "2px dashed rgba(251,146,60,0.8)" : "1px solid #111";
+
+                          if (!cell || total === 0) {
+                            const bg = inBody
+                              ? (isGreen ? "rgba(22,163,74,0.08)" : "rgba(220,38,38,0.08)")
+                              : "rgba(255,255,255,0.015)";
+                            return <div key={p} style={{ height: CELL_H, width: CELL_W, background: bg, borderTop, borderBottom, borderLeft: "1px solid #111", borderRight: "1px solid #111", flexShrink: 0 }} />;
+                          }
+
+                          const askDom    = cell.a >= cell.b;
+                          const ratio     = askDom ? (cell.b > 0 ? cell.a / cell.b : 999) : (cell.a > 0 ? cell.b / cell.a : 999);
+                          const imbalance = total > 5 && ratio >= 3;
+                          const isPOC     = (volProfile[p] || 0) === maxVol;
+                          const intensity = Math.min(Math.max(cell.b, cell.a) / 300, 1);
+
+                          const bg = inBody
+                            ? (askDom ? `rgba(22,163,74,${0.12 + intensity * 0.42})` : `rgba(220,38,38,${0.12 + intensity * 0.42})`)
+                            : (askDom ? `rgba(22,163,74,${0.02 + intensity * 0.14})` : `rgba(220,38,38,${0.02 + intensity * 0.14})`);
+
+                          const sellColor = imbalance && !askDom ? "#fb923c" : !askDom ? "#fca5a5" : "#4a4a6a";
+                          const buyColor  = imbalance &&  askDom ? "#fb923c" :  askDom ? "#86efac" : "#4a4a6a";
+
+                          return (
+                            <div key={p} style={{
+                              height: CELL_H, width: CELL_W, background: bg, flexShrink: 0,
+                              borderTop, borderBottom,
+                              borderLeft:  isPOC ? "1px solid rgba(245,158,11,0.3)" : "1px solid #111",
+                              borderRight: isPOC ? "1px solid rgba(245,158,11,0.3)" : "1px solid #111",
+                              display: "flex", alignItems: "center",
+                              position: "relative", zIndex: 3,
+                            }}>
+                              <span style={{ display: "inline-block", width: half - 5, textAlign: "right",  paddingRight: 8, fontSize: 9, fontWeight: !askDom ? 700 : 400, color: sellColor, lineHeight: 1 }}>
+                                {cell.b > 0 ? cell.b : ""}
+                              </span>
+                              <span style={{ display: "inline-block", width: half - 5, textAlign: "left",   paddingLeft:  8, fontSize: 9, fontWeight:  askDom ? 700 : 400, color: buyColor,  lineHeight: 1 }}>
+                                {cell.a > 0 ? cell.a : ""}
+                              </span>
+                            </div>
+                          );
+                        })}
+
+                        {/* Empty rows below candle low */}
+                        {belowCount > 0 && (
+                          <div style={{ height: belowCount * CELL_H, width: CELL_W, background: "#0a0a0f", flexShrink: 0 }} />
+                        )}
+                      </>
                     );
-                  })}
+                  })()}
 
                   {/* ── Summary rows ── */}
                   {/* Ask */}
